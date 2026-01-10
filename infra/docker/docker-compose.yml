@@ -28,17 +28,14 @@ services:
 
   frontend:
     build:
-      context: ../../
-      dockerfile: apps/frontend/Dockerfile
-      args:
+        context: ../../
+        dockerfile: apps/frontend/Dockerfile
+    environment:
         API_URL: ${PUBLIC_API_URL}
-    depends_on:
-      - backend
     ports:
-      - "8080:80"
-    networks:
-      - bookcrossing_net
-    restart: unless-stopped
+        - "8080:80"
+    depends_on:
+        - backend
 
 volumes:
   bookcrossing_pgdata:
