@@ -18,7 +18,6 @@ COPY --from=build /app/apps/backend/node_modules node_modules
 
 COPY apps/backend/prisma prisma
 COPY apps/backend/prisma.config.ts ./
-COPY apps/backend/.env ./.env
 
 EXPOSE 3000
 
