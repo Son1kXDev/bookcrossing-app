@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+#!/bin/sh
 set -e
 
 cat > /usr/share/nginx/html/config.json <<EOF
