@@ -15,8 +15,10 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  wallet Wallet?
-  Book   Book[]
+  wallet        Wallet?
+  books         Book[]
+  dealsAsSeller Deal[]  @relation("DealSeller")
+  dealsAsBuyer  Deal[]  @relation("DealBuyer")
 
   @@map("users")
 }
@@ -40,12 +42,59 @@ model Book {
   author      String?
   description String?
 
-  status    String   @default("available") // available | reserved | exchanged
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  status    BookStatus @default(available)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
 
   owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
+  deals Deal[]
+
   @@index([ownerId])
   @@map("books")
+}
+
+model Deal {
+  id BigInt @id @default(autoincrement())
+
+  bookId   BigInt @map("book_id")
+  sellerId BigInt @map("seller_id")
+  buyerId  BigInt @map("buyer_id")
+
+  status DealStatus @default(pending)
+
+  pickupPointId   String?   @map("pickup_point_id")
+  trackingNumber  String?   @map("tracking_number")
+  sellerShippedAt DateTime? @map("seller_shipped_at")
+  buyerReceivedAt DateTime? @map("buyer_received_at")
+
+  acceptedAt DateTime? @map("accepted_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  book   Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  seller User @relation("DealSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer  User @relation("DealBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
+  @@index([sellerId])
+  @@index([buyerId])
+  @@map("deals")
+}
+
+enum BookStatus {
+  available
+  reserved
+  exchanged
+}
+
+enum DealStatus {
+  pending
+  accepted
+  pickup_selected
+  shipped
+  completed
+  rejected
+  cancelled
 }
