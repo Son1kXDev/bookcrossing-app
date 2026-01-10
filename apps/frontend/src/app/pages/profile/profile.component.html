@@ -1,1 +1,30 @@
-<p>profile works!</p>
+<div class="min-h-screen p-6">
+  <div class="max-w-xl mx-auto rounded-xl border p-6">
+    <div class="flex items-center justify-between gap-4">
+      <h1 class="text-2xl font-semibold">Профиль</h1>
+      <button (click)="logout()" class="border rounded-lg px-3 py-2">Выйти</button>
+    </div>
+
+    @if(loading){
+      <div class="mt-4">Загрузка...</div>
+    } @else if (user) {
+      <div class="mt-4 space-y-2">
+        <div><span class="opacity-70">Имя:</span> {{ user.displayName }}</div>
+        <div><span class="opacity-70">Email:</span> {{ user.email }}</div>
+        <div><span class="opacity-70">Роль:</span> {{ user.role }}</div>
+
+        <div class="pt-3 border-t mt-3">
+          <div class="text-lg">
+            <span class="opacity-70">Кошелёк:</span>
+            <b>{{ user.wallet?.balance ?? 0 }}</b> монет
+          </div>
+        </div>
+      </div>
+    }
+
+    @if(error){
+      <p class="text-sm text-red-600 mt-3">{{ error }}</p>
+    }
+
+  </div>
+</div>

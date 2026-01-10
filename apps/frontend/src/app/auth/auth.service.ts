@@ -52,4 +52,8 @@ export class AuthService {
     this.tokenStorage.clear();
   }
 
+  hasToken(): boolean {
+    return !!this.tokenStorage.get();
+  }
+
 }
