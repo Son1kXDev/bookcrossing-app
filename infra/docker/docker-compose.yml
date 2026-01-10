@@ -25,6 +25,8 @@ services:
     networks:
       - bookcrossing_net
     restart: unless-stopped
+    expose:
+        - "3000"
 
   frontend:
     build:
@@ -32,10 +34,10 @@ services:
         dockerfile: apps/frontend/Dockerfile
     environment:
         API_URL: ${PUBLIC_API_URL}
-    ports:
-        - "8080:80"
     depends_on:
         - backend
+    expose:
+        - "80"
 
 volumes:
   bookcrossing_pgdata:
