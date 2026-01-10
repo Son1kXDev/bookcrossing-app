@@ -5,7 +5,7 @@ export const CreateDealDto = z.object({
 });
 
 export const SelectPickupDto = z.object({
-    pickupPointId: z.string().min(1).max(128),
+    pickupPointId: z.string().min(2).max(64),
 });
 
 export const ShipDealDto = z.object({

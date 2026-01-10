@@ -4,7 +4,9 @@ import {env} from "./config/env.js";
 import {authRouter} from "./auth/auth.routes.js";
 import {walletRouter} from "./wallet/wallet.routes.js";
 import {booksRouter} from "./books/books.routes.js";
-import {dealsRouter} from "./deals/deals.routes.js";
+import {makeDealsRouter} from "./deals/deals.routes.js";
+import {buildShippingService} from "./di/shipping.js";
+import {makeCdekRouter} from "./cdek/cdek.routes.js";
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.get("/health", (_, res) => res.json({ok: true}));
 app.use("/auth", authRouter);
 app.use("/wallet", walletRouter);
 app.use("/books", booksRouter);
-app.use("/deals", dealsRouter);
+const shipping = buildShippingService();
+app.use("/deals", makeDealsRouter(shipping));
+app.use("/cdek", makeCdekRouter(shipping));
 
 app.listen(env.PORT, () => console.log(`API on http://localhost:${env.PORT}`));
