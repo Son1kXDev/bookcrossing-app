@@ -3,6 +3,7 @@ import cors from "cors";
 import {env} from "./config/env.js";
 import {authRouter} from "./auth/auth.routes.js";
 import {walletRouter} from "./wallet/wallet.routes.js";
+import {booksRouter} from "./books/books.routes.js";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(express.json());
 app.get("/health", (_, res) => res.json({ok: true}));
 app.use("/auth", authRouter);
 app.use("/wallet", walletRouter);
+app.use("/books", booksRouter);
 
 app.listen(env.PORT, () => console.log(`API on http://localhost:${env.PORT}`));
