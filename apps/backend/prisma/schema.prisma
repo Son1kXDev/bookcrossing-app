@@ -16,6 +16,7 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   wallet Wallet?
+  Book   Book[]
 
   @@map("users")
 }
@@ -29,4 +30,22 @@ model Wallet {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("wallets")
+}
+
+model Book {
+  id      BigInt @id @default(autoincrement())
+  ownerId BigInt @map("owner_id")
+
+  title       String
+  author      String?
+  description String?
+
+  status    String   @default("available") // available | reserved | exchanged
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@map("books")
 }
