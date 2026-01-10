@@ -22,6 +22,10 @@ export class RegisterComponent {
 
   constructor(private auth: AuthService, private router: Router) {}
 
+  canSubmit() {
+    return this.email.trim() !== "" && this.password.trim() !== "" && this.displayName.trim() !== "" && !this.loading;
+  }
+
   async submit() {
     this.error = "";
     this.loading = true;

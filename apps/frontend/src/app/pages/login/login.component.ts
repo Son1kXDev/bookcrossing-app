@@ -21,6 +21,10 @@ export class LoginComponent {
 
   constructor(private auth: AuthService, private router: Router) {}
 
+  canSubmit() {
+    return this.email.trim() !== "" && this.password.trim() !== "" && !this.loading;
+  }
+
   async submit() {
     this.error = "";
     this.loading = true;
@@ -28,7 +32,7 @@ export class LoginComponent {
       await this.auth.login(this.email, this.password);
       await this.router.navigateByUrl("/profile");
     } catch (e: any) {
-      this.error = "Не удалось войти.";
+      this.error = "Ошибка входа. Неправильный email или пароль";
     } finally {
       this.loading = false;
     }
