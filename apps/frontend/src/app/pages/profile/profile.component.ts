@@ -34,4 +34,12 @@ export class ProfileComponent implements OnInit {
     this.auth.logout();
     await this.router.navigateByUrl("/login");
   }
+
+  roleDisplay(role:string){
+    switch(role){
+      case 'user': return 'Пользователь';
+      case 'admin': return 'Администратор';
+      default: return role;
+    }
+  }
 }

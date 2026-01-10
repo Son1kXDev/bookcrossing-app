@@ -11,12 +11,12 @@
       <div class="mt-4 space-y-2">
         <div><span class="opacity-70">Имя:</span> {{ user.displayName }}</div>
         <div><span class="opacity-70">Email:</span> {{ user.email }}</div>
-        <div><span class="opacity-70">Роль:</span> {{ user.role }}</div>
+        <div><span class="opacity-70">Роль:</span> {{ roleDisplay(user.role) }}</div>
 
         <div class="pt-3 border-t mt-3">
           <div class="text-lg">
-            <span class="opacity-70">Кошелёк:</span>
-            <b>{{ user.wallet?.balance ?? 0 }}</b> монет
+            <span class="opacity-70">Баланс: </span>
+            <b>{{ user.wallet?.balance ?? 0 }}</b>
           </div>
         </div>
       </div>
