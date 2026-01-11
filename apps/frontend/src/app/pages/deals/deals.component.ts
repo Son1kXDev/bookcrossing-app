@@ -122,6 +122,52 @@ export class DealsComponent implements OnInit {
     }
   }
 
+  badgeForOutgoing(status: DealStatus): { text: string; cls: string } {
+    switch (status) {
+      case "pending":
+        return { text: "Ожидает продавца", cls: "badge badge-neutral" };
+      case "accepted":
+        return { text: "Нужно выбрать ПВЗ", cls: "badge badge-yellow" };
+      case "pickup_selected":
+        return { text: "ПВЗ выбран", cls: "badge badge-neutral" };
+      case "shipped":
+        return { text: "Нужно подтвердить получение", cls: "badge badge-yellow" };
+      case "completed":
+        return { text: "Завершена", cls: "badge badge-green" };
+      case "rejected":
+        return { text: "Отклонена", cls: "badge badge-red" };
+      case "cancelled":
+        return { text: "Отменена", cls: "badge badge-red" };
+    }
+  }
+
+  badgeForIncoming(status: DealStatus): { text: string; cls: string } {
+    switch (status) {
+      case "pending":
+        return { text: "Нужно подтвердить", cls: "badge badge-yellow" };
+      case "accepted":
+        return { text: "Покупатель выбирает ПВЗ", cls: "badge badge-neutral" };
+      case "pickup_selected":
+        return { text: "Нужно отправить", cls: "badge badge-yellow" };
+      case "shipped":
+        return { text: "Отправлено", cls: "badge badge-neutral" };
+      case "completed":
+        return { text: "Завершена", cls: "badge badge-green" };
+      case "rejected":
+        return { text: "Отклонена", cls: "badge badge-red" };
+      case "cancelled":
+        return { text: "Отменена покупателем", cls: "badge badge-red" };
+    }
+  }
+
+  needsBuyerAction(d: DealDto): boolean {
+    return d.status === "accepted" || d.status === "shipped";
+  }
+
+  needsSellerAction(d: DealDto): boolean {
+    return d.status === "pending" || d.status === "pickup_selected";
+  }
+
   async reject(d: DealDto) {
     this.error = "";
     try {

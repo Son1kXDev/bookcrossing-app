@@ -1,25 +1,47 @@
-<div class="max-w-xl mx-auto p-4 space-y-4">
-  <h1 class="text-xl font-semibold">Добавить книгу</h1>
+<div class="mx-auto max-w-3xl px-4 py-4 space-y-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Добавить книгу</h1>
+    <div class="text-sm opacity-70">Заполните информацию и при желании загрузите обложку.</div>
+  </header>
 
-  <div class="rounded-xl border p-4 space-y-3">
-    <div class="font-medium">Обложка</div>
+  <section class="rounded-3xl border border-gray-950/10 bg-white p-5 space-y-3">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <div class="font-semibold">Обложка</div>
+        <div class="text-xs opacity-60">Изображение до 2 МБ</div>
+      </div>
+    </div>
 
     @if(coverFile){
-      <img [src]="coverLocalUrl" alt="Обложка" class="w-full max-h-80 object-cover rounded-lg border" />
+      <img
+        [src]="coverLocalUrl"
+        alt="Обложка"
+        class="w-full max-h-80 object-cover rounded-2xl border border-gray-950/10"
+      />
     } @else {
-      <div class="text-sm opacity-70">Обложка не загружена</div>
+      <div class="rounded-2xl border border-dashed border-gray-950/15 bg-gray-50 p-6 text-sm opacity-70">
+        Обложка не выбрана
+      </div>
     }
 
     <div class="flex flex-wrap gap-2 items-center">
-      <label [class.opacity-40]="busy"
-             class="px-3 py-2 rounded-lg bg-black text-white cursor-pointer disabled:opacity-40">
+      <label
+        [class.opacity-40]="busy"
+        class="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 cursor-pointer"
+      >
         {{ busy ? "Загрузка…" : (coverFile ? "Заменить" : "Загрузить") }}
-        <input (change)="onFile($event)" [(ngModel)]="cover" [disabled]="busy" accept="image/*" class="hidden" type="file" />
+        <input
+          (change)="onFile($event)"
+          [disabled]="busy"
+          accept="image/*"
+          class="hidden"
+          type="file"
+        />
       </label>
 
       @if(coverLocalUrl){
         <button
-          class="px-3 py-2 rounded-lg bg-black/10"
+          class="rounded-xl bg-black/5 px-4 py-2 text-sm hover:bg-black/10"
           (click)="deleteCover()"
           [disabled]="busy"
         >
@@ -27,36 +49,54 @@
         </button>
       }
     </div>
+  </section>
 
-    <div class="text-xs opacity-60">Поддерживаются изображения до 2 МБ</div>
-  </div>
-
-  <div class="rounded-xl border p-4 space-y-3">
+  <section class="rounded-3xl border border-gray-950/10 bg-white p-5 space-y-4">
     <label class="block">
-      <div class="text-sm opacity-70 mb-1">Название</div>
-      <input [(ngModel)]="title" class="w-full border rounded-lg px-3 py-2" name="title"/>
+      <div class="text-sm font-medium mb-1">Название</div>
+      <input
+        [(ngModel)]="title"
+        class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
+        name="title"
+        placeholder="Например: Мастер и Маргарита"
+      />
     </label>
 
     <label class="block">
-      <div class="text-sm opacity-70 mb-1">Автор</div>
-      <input [(ngModel)]="author" class="w-full border rounded-lg px-3 py-2" name="author"/>
+      <div class="text-sm font-medium mb-1">Автор</div>
+      <input
+        [(ngModel)]="author"
+        class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
+        name="author"
+        placeholder="Например: М. А. Булгаков"
+      />
     </label>
 
     <label class="block">
-      <div class="text-sm opacity-70 mb-1">Описание (опционально)</div>
-      <textarea [(ngModel)]="description" class="w-full border rounded-lg px-3 py-2" name="description" rows="5"></textarea>
+      <div class="text-sm font-medium mb-1">Описание</div>
+      <textarea
+        [(ngModel)]="description"
+        class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
+        name="description"
+        placeholder="Коротко опишите состояние и особенности книги…"
+        rows="6"
+      ></textarea>
     </label>
 
     @if(error){
-      <div class="text-red-600">{{ error }}</div>
+      <div class="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {{ error }}
+      </div>
     }
 
-    <button
-      (click)="submit()"
-      [disabled]="busy || !title.trim()"
-      class="px-3 py-2 rounded-lg bg-black text-white disabled:opacity-40"
-    >
-      {{ busy ? "Сохранение…" : "Сохранить" }}
-    </button>
-  </div>
+    <div class="flex flex-wrap gap-2">
+      <button
+        (click)="submit()"
+        [disabled]="busy || !title.trim()"
+        class="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
+      >
+        {{ busy ? "Сохранение…" : "Сохранить" }}
+      </button>
+    </div>
+  </section>
 </div>

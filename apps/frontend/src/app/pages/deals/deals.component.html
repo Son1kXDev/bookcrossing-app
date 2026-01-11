@@ -1,66 +1,84 @@
-<div class="max-w-5xl mx-auto p-4 space-y-6">
-  <header class="flex items-center justify-between gap-3">
-    <h1 class="text-xl font-semibold">Сделки</h1>
-    <button
-      (click)="reload()"
-      [disabled]="loading"
-      class="px-3 py-2 rounded-lg border border-gray-950/10 hover:bg-gray-950/5"
-    >
+<div class="space-y-6">
+  <header class="flex items-start justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Сделки</h1>
+      <div class="text-sm text-slate-600 mt-1">
+        Здесь отображаются ваши исходящие и входящие сделки.
+      </div>
+    </div>
+
+    <button (click)="reload()" [disabled]="loading" class="btn btn-secondary">
       Обновить
     </button>
   </header>
 
   @if(loading){
-    <div class="opacity-70">Загрузка…</div>
+    <div class="card"><div class="card-body muted">Загрузка…</div></div>
   } @else if(error){
-    <div class="text-red-600">{{ error }}</div>
+    <div class="badge badge-red">{{ error }}</div>
   } @else {
 
     <section class="space-y-3">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold">Исходящие</h2>
-        <div class="text-sm opacity-70">Всего: {{ outgoing.length }}</div>
+        <div class="flex items-center gap-2">
+          <h2 class="section-title">Исходящие</h2>
+          <span class="badge badge-neutral">{{ outgoing.length }}</span>
+        </div>
+        <div class="text-sm text-slate-600">Вы — покупатель</div>
       </div>
 
       @if(outgoing.length === 0){
-        <div class="rounded-xl border p-4 opacity-70">Пока нет исходящих сделок.</div>
+        <div class="card">
+          <div class="card-body muted">
+            Пока нет исходящих сделок. Выберите книгу в каталоге и создайте сделку.
+          </div>
+        </div>
       } @else {
         <div class="grid gap-3">
           @for(d of outgoing; track d.id){
-            <div class="rounded-xl border p-4 space-y-2 bg-white">
-              <div class="flex items-start justify-between gap-3">
-                <div class="space-y-1">
-                  <div class="font-medium">{{ titleOf(d) }}</div>
+            <div
+              class="card"
+              [class.ring-2]="needsBuyerAction(d)"
+              [class.ring-amber-200]="needsBuyerAction(d)"
+            >
+              <div class="card-body space-y-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0 space-y-1">
+                    <div class="font-semibold truncate">{{ titleOf(d) }}</div>
 
-                  @if(d.pickupPointId){
-                    <div class="text-xs opacity-60">ПВЗ: {{ d.pickupPointId }}</div>
+                    @if(d.seller?.displayName){
+                      <div class="text-sm text-slate-600">Продавец: {{ d.seller?.displayName }}</div>
+                    }
+
+                    @if(d.pickupPointId){
+                      <div class="text-xs text-slate-500">ПВЗ: {{ d.pickupPointId }}</div>
+                    }
+                    @if(d.trackingNumber){
+                      <div class="text-xs text-slate-500">Трек: {{ d.trackingNumber }}</div>
+                    }
+                  </div>
+
+                  <span class="shrink-0" [class]="badgeForOutgoing(d.status).cls">
+                    {{ badgeForOutgoing(d.status).text }}
+                  </span>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  @if(d.status === 'pending'){
+                    <button (click)="cancel(d)" class="btn btn-secondary">Отменить</button>
                   }
-                  @if(d.trackingNumber){
-                    <div class="text-xs opacity-60">Трек: {{ d.trackingNumber }}</div>
+
+                  @if(d.status === 'accepted'){
+                    <button (click)="openPvz(d)" class="btn btn-primary">Выбрать ПВЗ</button>
+                  }
+
+                  @if(d.status === 'shipped'){
+                    <button (click)="receive(d)" class="btn btn-primary">Подтвердить получение</button>
                   }
                 </div>
 
-                <span class="text-xs px-2 py-1 rounded bg-black/5">{{ outgoingStatusLabel(d.status)}}</span>
-              </div>
-
-              <div class="flex flex-wrap gap-2 pt-1">
-                @if (d.status === 'pending') {
-                  <button (click)="cancel(d)" class="px-3 py-2 rounded-lg bg-black/10 hover:bg-black/15">
-                    Отменить
-                  </button>
-                }
-
-                @if (d.status === 'accepted') {
-                  <button (click)="openPvz(d)" class="px-3 py-2 rounded-lg bg-black text-white hover:opacity-90">
-                    Выбрать ПВЗ
-                  </button>
-                }
-
-                @if (d.status === 'shipped') {
-                  <button (click)="receive(d)" class="px-3 py-2 rounded-lg bg-black text-white hover:opacity-90">
-                    Подтвердить получение
-                  </button>
-                }
+                <div class="divider"></div>
+                <div class="text-xs text-slate-500">ID сделки: {{ d.id }}</div>
               </div>
             </div>
           }
@@ -70,57 +88,79 @@
 
     <section class="space-y-3">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold">Входящие</h2>
-        <div class="text-sm opacity-70">Всего: {{ incoming.length }}</div>
+        <div class="flex items-center gap-2">
+          <h2 class="section-title">Входящие</h2>
+          <span class="badge badge-neutral">{{ incoming.length }}</span>
+        </div>
+        <div class="text-sm text-slate-600">Вы — продавец</div>
       </div>
 
       @if(incoming.length === 0){
-        <div class="rounded-xl border p-4 opacity-70">Пока нет входящих сделок.</div>
+        <div class="card"><div class="card-body muted">Пока нет входящих сделок.</div></div>
       } @else {
         <div class="grid gap-3">
           @for(d of incoming; track d.id){
-            <div class="rounded-xl border p-4 space-y-2 bg-white">
-              <div class="flex items-start justify-between gap-3">
-                <div class="space-y-1">
-                  <div class="font-medium">{{ titleOf(d) }}</div>
+            <div
+              class="card"
+              [class.ring-2]="needsSellerAction(d)"
+              [class.ring-amber-200]="needsSellerAction(d)"
+            >
+              <div class="card-body space-y-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0 space-y-1">
+                    <div class="font-semibold truncate">{{ titleOf(d) }}</div>
 
-                  @if(d.pickupPointId){
-                    <div class="text-xs opacity-60">ПВЗ: {{ d.pickupPointId }}</div>
-                  }
-                  @if(d.trackingNumber){
-                    <div class="text-xs opacity-60">Трек: {{ d.trackingNumber }}</div>
-                  }
+                    @if(d.buyer?.displayName){
+                      <div class="text-sm text-slate-600">Покупатель: {{ d.buyer?.displayName }}</div>
+                    }
+
+                    @if(d.pickupPointId){
+                      <div class="text-xs text-slate-500">ПВЗ: {{ d.pickupPointId }}</div>
+                    }
+                    @if(d.trackingNumber){
+                      <div class="text-xs text-slate-500">Трек: {{ d.trackingNumber }}</div>
+                    }
+                  </div>
+
+                  <span class="shrink-0" [class]="badgeForIncoming(d.status).cls">
+                    {{ badgeForIncoming(d.status).text }}
+                  </span>
                 </div>
 
-                <span class="text-xs px-2 py-1 rounded bg-black/5">{{ incomingStatusLabel(d.status) }}</span>
+                @if(d.status === 'pending'){
+                  <div class="flex flex-wrap gap-2">
+                    <button (click)="accept(d)" class="btn btn-primary">Подтвердить</button>
+                    <button (click)="reject(d)" class="btn btn-secondary">Отклонить</button>
+                  </div>
+                }
+
+                @if(d.status === 'pickup_selected'){
+                  <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                    <div class="text-sm font-medium">Подтвердите отправку</div>
+
+                    <label class="block">
+                      <div class="text-xs text-slate-600 mb-1">Трек-номер</div>
+                      <input
+                        class="input"
+                        [(ngModel)]="tracking[d.id]"
+                        name="t{{d.id}}"
+                        placeholder="Например: MOCK123456"
+                      />
+                    </label>
+
+                    <button
+                      [disabled]="!tracking[d.id]"
+                      class="btn btn-primary"
+                      (click)="ship(d)"
+                    >
+                      Подтвердить отправку
+                    </button>
+                  </div>
+                }
+
+                <div class="divider"></div>
+                <div class="text-xs text-slate-500">ID сделки: {{ d.id }}</div>
               </div>
-
-              @if(d.status === 'pending'){
-                <div class="flex flex-wrap gap-2 pt-1">
-                  <button class="px-3 py-2 rounded-lg bg-black text-white hover:opacity-90" (click)="accept(d)">
-                    Подтвердить
-                  </button>
-                  <button class="px-3 py-2 rounded-lg bg-black/10 hover:bg-black/15" (click)="reject(d)">
-                    Отклонить
-                  </button>
-                </div>
-              }
-
-              @if(d.status === 'pickup_selected'){
-                <div class="space-y-2 pt-1">
-                  <label class="block">
-                    <div class="text-xs opacity-70 mb-1">Трек-номер</div>
-                    <input
-                      class="w-full border rounded-lg px-3 py-2"
-                      [(ngModel)]="tracking[d.id]"
-                      name="t{{d.id}}"
-                    />
-                  </label>
-                  <button [disabled]="!tracking[d.id]" class="px-3 py-2 rounded-lg bg-black text-white hover:opacity-90 disabled:opacity-40" (click)="ship(d)">
-                    Подтвердить отправку
-                  </button>
-                </div>
-              }
             </div>
           }
         </div>
