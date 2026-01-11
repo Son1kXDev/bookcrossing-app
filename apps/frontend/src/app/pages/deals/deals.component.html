@@ -47,7 +47,12 @@
                     <div class="font-semibold truncate">{{ titleOf(d) }}</div>
 
                     @if(d.seller?.displayName){
-                      <div class="text-sm text-slate-600">Продавец: {{ d.seller?.displayName }}</div>
+                      <div class="text-sm opacity-70">
+                        Продавец:
+                        <a class="link" [routerLink]="['/users', d.seller!.id]">
+                          {{ d.seller!.displayName }}
+                        </a>
+                      </div>
                     }
 
                     @if(d.pickupPointId){
@@ -111,8 +116,14 @@
                     <div class="font-semibold truncate">{{ titleOf(d) }}</div>
 
                     @if(d.buyer?.displayName){
-                      <div class="text-sm text-slate-600">Покупатель: {{ d.buyer?.displayName }}</div>
+                      <div class="text-sm opacity-70">
+                        Покупатель:
+                        <a class="link" [routerLink]="['/users', d.buyer!.id]">
+                          {{ d.buyer!.displayName }}
+                        </a>
+                      </div>
                     }
+
 
                     @if(d.pickupPointId){
                       <div class="text-xs text-slate-500">ПВЗ: {{ d.pickupPointId }}</div>

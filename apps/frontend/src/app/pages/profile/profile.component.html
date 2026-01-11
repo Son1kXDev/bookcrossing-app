@@ -1,11 +1,11 @@
-<div class="page space-y-4">
+<div class="page space-y-6">
   <header class="flex items-start justify-between gap-3">
     <div>
       <h1 class="text-2xl font-semibold tracking-tight">Профиль</h1>
-      <div class="text-sm text-slate-600">Информация о вашем аккаунте и балансе</div>
+      <div class="text-sm text-slate-600">Информация об аккаунте и краткая статистика</div>
     </div>
 
-    <button (click)="logout()" class="btn btn-secondary">
+    <button (click)="logout()" [disabled]="loading" class="btn btn-secondary">
       Выйти
     </button>
   </header>
@@ -16,79 +16,202 @@
     </div>
   } @else if(error){
     <div class="badge badge-red">{{ error }}</div>
-  } @else if(user) {
+  } @else if(user){
 
-    <div class="grid gap-3 md:grid-cols-2">
-      <section class="card">
-        <div class="card-body space-y-3">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <div class="text-sm text-slate-600">Имя</div>
-              <div class="text-lg font-semibold truncate">{{ user.displayName }}</div>
-            </div>
-
-            <span class="badge"
-                  [class.badge-green]="user.role === 'admin'"
-                  [class.badge-neutral]="user.role !== 'admin'">
-              {{ roleDisplay(user.role) }}
-            </span>
+    <section class="card">
+      <div class="card-body flex flex-col sm:flex-row sm:items-center gap-4">
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="shrink-0">
+            @if(user.avatarUrl){
+              <img
+                class="h-14 w-14 rounded-2xl border border-slate-200 object-cover bg-slate-50"
+                [src]="coverSrc(user.avatarUrl)"
+                alt="avatar"
+              />
+            } @else {
+              <div
+                class="h-14 w-14 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center font-semibold text-slate-700"
+                aria-hidden="true"
+              >
+                {{ initialsOf(user.displayName) }}
+              </div>
+            }
           </div>
 
-          <div class="divider"></div>
+          <div class="min-w-0">
+            <div class="text-lg font-semibold truncate">{{ user.displayName }}</div>
+            <div class="text-sm text-slate-600 truncate">{{ user.email }}</div>
 
-          <div class="space-y-2">
-            <div>
-              <div class="text-sm text-slate-600">Email</div>
-              <div class="text-sm font-medium break-all">{{ user.email }}</div>
-            </div>
-
-            <div>
-              <div class="text-sm text-slate-600">ID пользователя</div>
-              <div class="text-xs text-slate-600 break-all">{{ user.id }}</div>
-            </div>
-
-            <div>
-              <div class="text-sm text-slate-600">Создан</div>
-              <div class="text-sm">{{ user.createdAt | date: 'long' : undefined : 'ru' }}</div>
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+              <span class="badge badge-neutral">Роль: {{ roleDisplay(user.role) }}</span>
+              <span class="badge badge-green">Баланс: <b class="ml-1 text-emerald-900">{{ user.wallet?.balance ?? 0 }}</b></span>
+              <span class="badge badge-neutral">
+                На сервисе с {{ user.createdAt | date:'dd.MM.yyyy' }}
+              </span>
             </div>
           </div>
         </div>
-      </section>
 
-      <section class="card">
-        <div class="card-body space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-sm text-slate-600">Баланс</div>
-              <div class="text-2xl font-semibold tracking-tight">
-                {{ user.wallet?.balance ?? 0 }}
-              </div>
+        <div class="sm:ml-auto flex flex-wrap gap-2">
+          <label class="btn btn-secondary cursor-pointer" [class.opacity-40]="avatarBusy">
+            Загрузить аватар
+            <input type="file" accept="image/*" class="hidden" (change)="onAvatarFile($event)" [disabled]="avatarBusy" />
+          </label>
+
+          @if(user.avatarUrl){
+            <button class="btn btn-secondary" (click)="deleteAvatar()" [disabled]="avatarBusy">
+              Удалить аватар
+            </button>
+          }
+
+          <a class="btn btn-secondary" routerLink="/books/my">Мои книги</a>
+          <a class="btn btn-secondary" routerLink="/deals">Мои сделки</a>
+        </div>
+
+        @if(avatarErr){
+          <div class="card">
+            <div class="card-body">
+              <span class="badge badge-red">{{ avatarErr }}</span>
             </div>
+          </div>
+        }
+      </div>
+    </section>
 
-            <span class="badge badge-neutral">
-              Монеты
-            </span>
+    <section class="grid gap-3 sm:grid-cols-2">
+      <div class="card">
+        <div class="card-body space-y-2">
+          <div class="section-title">Книги</div>
+
+          <div class="flex items-center justify-between">
+            <div class="muted">Всего моих</div>
+            <div class="font-semibold">{{ stats.booksTotal }}</div>
           </div>
 
           <div class="divider"></div>
-
-          <div class="text-sm text-slate-600">
-            Баланс используется для создания сделки на книгу (1 книга = 1 монета).
-          </div>
 
           <div class="flex flex-wrap gap-2">
-            <a routerLink="/catalog" class="btn btn-primary">Перейти в каталог</a>
-            <a routerLink="/deals" class="btn btn-secondary">Мои сделки</a>
+            <span class="badge badge-green">Доступно: {{ stats.booksAvailable }}</span>
+            <span class="badge badge-yellow">Зарезервировано: {{ stats.booksReserved }}</span>
+            <span class="badge badge-neutral">Передано: {{ stats.booksExchanged }}</span>
+          </div>
+
+          @if(stats.booksTotal === 0){
+            <div class="text-sm text-slate-600">
+              У вас пока нет книг. Добавьте первую — и она появится в каталоге.
+            </div>
+          }
+
+          <div class="pt-1">
+            <a class="link text-sm" routerLink="/books/new">Добавить книгу</a>
           </div>
         </div>
-      </section>
-    </div>
-
-  } @else {
-    <div class="card">
-      <div class="card-body muted">
-        Данные профиля не найдены.
       </div>
-    </div>
+
+      <div class="card">
+        <div class="card-body space-y-2">
+          <div class="section-title">Сделки</div>
+
+          <div class="flex items-center justify-between">
+            <div class="muted">Исходящие (вы покупатель)</div>
+            <div class="font-semibold">{{ stats.outgoingTotal }}</div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="muted">Входящие (вы продавец)</div>
+            <div class="font-semibold">{{ stats.incomingTotal }}</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="badge badge-red">
+              Требуют действия: {{ stats.actionRequiredTotal }}
+            </span>
+          </div>
+
+          @if(stats.outgoingTotal + stats.incomingTotal === 0){
+            <div class="text-sm text-slate-600">
+              Сделок пока нет. Возьмите книгу в каталоге — и сделка появится здесь.
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="grid gap-3 lg:grid-cols-3">
+      <div class="card">
+        <div class="card-body space-y-3">
+          <div class="section-title">Редактирование</div>
+
+          <label class="block">
+            <div class="text-sm font-medium mb-1">Имя</div>
+            <input class="input" [(ngModel)]="editName" name="editName" />
+          </label>
+
+          @if(editErr){
+            <span class="badge badge-red">{{ editErr }}</span>
+          }
+          @if(editMsg){
+            <span class="badge badge-green">{{ editMsg }}</span>
+          }
+
+          <button class="btn btn-primary" (click)="saveProfile()" [disabled]="editBusy">
+            {{ editBusy ? "Сохраняю…" : "Сохранить" }}
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body space-y-3">
+          <div class="section-title">Смена пароля</div>
+
+          <label class="block">
+            <div class="text-sm font-medium mb-1">Текущий пароль</div>
+            <input class="input" [(ngModel)]="passCurrent" name="passCurrent" type="password" />
+          </label>
+
+          <label class="block">
+            <div class="text-sm font-medium mb-1">Новый пароль</div>
+            <input class="input" [(ngModel)]="passNew" name="passNew" type="password" />
+          </label>
+
+          @if(passErr){
+            <span class="badge badge-red">{{ passErr }}</span>
+          }
+          @if(passMsg){
+            <span class="badge badge-green">{{ passMsg }}</span>
+          }
+
+          <button class="btn btn-primary" (click)="changePassword()" [disabled]="passBusy">
+            {{ passBusy ? "Меняю…" : "Изменить" }}
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body space-y-3">
+          <div class="section-title">Удаление аккаунта</div>
+          <div class="text-sm text-slate-600">
+            Это действие необратимо. Все ваши книги, кошелёк и сделки будут удалены.
+          </div>
+
+          <label class="block">
+            <div class="text-sm font-medium mb-1">Пароль для подтверждения</div>
+            <input class="input" [(ngModel)]="delPassword" name="delPassword" type="password" />
+          </label>
+
+          @if(delErr){
+            <span class="badge badge-red">{{ delErr }}</span>
+          }
+
+          <button class="btn btn-danger" (click)="deleteAccount()" [disabled]="delBusy">
+            {{ delBusy ? "Удаляю…" : "Удалить аккаунт" }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+
   }
 </div>

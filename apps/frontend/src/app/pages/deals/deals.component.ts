@@ -3,11 +3,12 @@ import {FormsModule} from '@angular/forms';
 import {DealDto, DealStatus, PickupPointDto} from '../../core/api.types';
 import {DealsService} from '../../services/deals.service';
 import {PvzPickerComponent} from '../../shared/pvz-picker/pvz-picker.component';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-deals',
   standalone: true,
-  imports: [FormsModule, PvzPickerComponent],
+  imports: [FormsModule, PvzPickerComponent, RouterLink],
   templateUrl: './deals.component.html',
   styleUrl: './deals.component.scss'
 })

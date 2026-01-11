@@ -16,6 +16,10 @@ export class DealsService {
     return firstValueFrom(this.http.get<DealDto[]>(`${this.cfg.apiUrl}/deals/my`));
   }
 
+  deals(userId: string): Promise<DealDto[]> {
+    return firstValueFrom(this.http.get<DealDto[]>(`${this.cfg.apiUrl}/deals/user/${userId}`));
+  }
+
   incoming(): Promise<DealDto[]> {
     return firstValueFrom(this.http.get<DealDto[]>(`${this.cfg.apiUrl}/deals/incoming`));
   }

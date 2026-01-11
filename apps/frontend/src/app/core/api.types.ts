@@ -22,6 +22,27 @@ export type BookDto = {
   owner?: UserShortDto;
 }
 
+export type ExtendedPublicUserDto = {
+  id: string;
+  displayName: string;
+  role: string;
+  createdAt: string;
+  avatarUrl?: string | null;
+
+  stats: {
+    booksTotal: number;
+    booksAvailable: number;
+    booksReserved: number;
+    booksExchanged: number;
+
+    dealsTotal: number;
+    dealsAsBuyer: number;
+    dealsAsSeller: number;
+    dealsCompleted: number;
+  };
+};
+
+
 export type DealStatus =
   | 'pending'
   | 'accepted'

@@ -9,6 +9,7 @@ import {NewBookComponent} from './pages/new-book/new-book.component';
 import {ShellComponent} from './core/shell/shell.component';
 import {DealsComponent} from './pages/deals/deals.component';
 import {EditBookComponent} from './pages/edit-book/edit-book.component';
+import {PublicProfileComponent} from './pages/public-profile/public-profile.component';
 
 export const routes: Routes = [
   {path: "login", component: LoginComponent,},
@@ -19,6 +20,7 @@ export const routes: Routes = [
     children: [
       { path: "catalog", component: CatalogComponent },
       { path: "profile", canActivate: [authGuard], component: ProfileComponent },
+      {path: "user/:id", component: PublicProfileComponent },
       { path: "books/my", canActivate: [authGuard], component: MyBooksComponent },
       { path: "books/new", canActivate: [authGuard], component: NewBookComponent },
       { path: "books/:id/edit", canActivate: [authGuard], component: EditBookComponent },

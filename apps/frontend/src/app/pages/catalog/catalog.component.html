@@ -81,8 +81,11 @@
                     }
 
                     @if(b.owner){
-                      <div class="text-sm text-slate-600 truncate">
-                        Владелец: <span class="font-medium text-slate-900">{{ b.owner.displayName }}</span>
+                      <div class="text-sm text-slate-600">
+                        Владелец:
+                        <a class="link" [routerLink]="['/user', b.owner.id]">
+                          {{ b.owner.displayName }}
+                        </a>
                       </div>
                     }
 
