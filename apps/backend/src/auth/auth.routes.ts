@@ -13,7 +13,12 @@ export const authRouter = Router();
 
 authRouter.post("/register", async (req, res) => {
     const parsed = RegisterDto.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({error: "VALIDATION_ERROR", details: parsed.error.flatten()});
+    if (!parsed.success) {
+        console.warn("Registration validation error:", parsed.error);
+        console.warn("Received data:", req.body);
+        console.warn("Parsed data:", parsed.data);
+        return res.status(400).json({error: "VALIDATION_ERROR", details: parsed.error.flatten()});
+    }
 
     const {email, password, displayName} = parsed.data;
 
