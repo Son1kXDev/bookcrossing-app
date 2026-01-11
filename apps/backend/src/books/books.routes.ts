@@ -88,7 +88,7 @@ booksRouter.patch("/:id", authGuard, async (req, res) => {
             });
             if (!book) return {error: "BOOK_NOT_FOUND" as const};
             if (book.ownerId !== userId) return {error: "FORBIDDEN" as const};
-            if (book.status !== "available") return {error: "BOOK_NOT_EDITABLE" as const};
+            if (book.status === "reserved") return {error: "BOOK_NOT_EDITABLE" as const};
 
             const data: any = {};
             if (parsed.data.title !== undefined) data.title = parsed.data.title;
@@ -133,7 +133,7 @@ booksRouter.delete("/:id", authGuard, async (req, res) => {
             });
             if (!book) return {error: "BOOK_NOT_FOUND" as const};
             if (book.ownerId !== userId) return {error: "FORBIDDEN" as const};
-            if (book.status !== "available") return {error: "BOOK_NOT_DELETABLE" as const};
+            if (book.status === "reserved") return {error: "BOOK_NOT_DELETABLE" as const};
 
             const activeDeal = await tx.deal.findFirst({
                 where: {
