@@ -142,6 +142,60 @@ booksRouter.patch("/:id", authGuard, async (req, res) => {
     }
 });
 
+booksRouter.post("/:id/relist", authGuard, async (req, res) => {
+    const userId = (req as AuthedRequest).userId;
+
+    const raw = req.params?.id;
+    const idStr = typeof raw === "string" ? raw : Array.isArray(raw) ? raw[0] : null;
+    if (!idStr) return res.status(400).json({error: "INVALID_BOOK_ID"});
+
+    let bookId: bigint;
+    try {
+        if (!/^\d+$/.test(idStr)) throw new Error("INVALID");
+        bookId = BigInt(idStr);
+    } catch {
+        return res.status(400).json({error: "INVALID_BOOK_ID"});
+    }
+
+    try {
+        const out = await prisma.$transaction(async (tx) => {
+            const book = await tx.book.findUnique({
+                where: {id: bookId},
+                select: {id: true, ownerId: true, status: true},
+            });
+
+            if (!book) return {error: "BOOK_NOT_FOUND" as const};
+            if (book.ownerId !== userId) return {error: "FORBIDDEN" as const};
+
+            if (book.status !== "exchanged") return {error: "BOOK_NOT_EXCHANGED" as const};
+
+            const activeDeal = await tx.deal.findFirst({
+                where: {
+                    bookId,
+                    status: {in: ["pending", "accepted", "pickup_selected", "shipped"]},
+                },
+                select: {id: true},
+            });
+            if (activeDeal) return {error: "BOOK_HAS_ACTIVE_DEAL" as const};
+
+            const updated = await tx.book.update({
+                where: {id: bookId},
+                data: {status: "available"},
+                select: {id: true, title: true, author: true, description: true, status: true, createdAt: true},
+            });
+
+            return {ok: true as const, book: updated};
+        });
+
+        if (!out.ok) return res.status(409).json({error: out.error});
+        return res.json({...out.book, id: out.book.id.toString()});
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({error: "INTERNAL_ERROR"});
+    }
+});
+
+
 booksRouter.delete("/:id", authGuard, async (req, res) => {
     const userId = (req as AuthedRequest).userId;
 
