@@ -55,4 +55,17 @@ export class MyBooksComponent implements OnInit {
       this.busyId = null;
     }
   }
+
+  async relist(bookId: string) {
+    this.error = "";
+    this.busyId = bookId;
+    try {
+      await this.booksApi.relist(bookId);
+      this.books = await this.booksApi.listMy();
+    } catch {
+      this.error = "Не удалось повторно выставить книгу";
+    } finally {
+      this.busyId = null;
+    }
+  }
 }

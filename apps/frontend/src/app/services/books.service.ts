@@ -28,6 +28,12 @@ export class BooksService {
     return firstValueFrom(this.http.delete<{ ok: true }>(`${this.cfg.apiUrl}/books/${bookId}`));
   }
 
+  relist(bookId: string): Promise<BookDto> {
+    return firstValueFrom(
+      this.http.post<BookDto>(`${this.cfg.apiUrl}/books/${bookId}/relist`, {})
+    );
+  }
+
   uploadCover(bookId: string, file: File): Promise<BookDto> {
     const fd = new FormData();
     fd.append("file", file);
