@@ -17,7 +17,7 @@ export const UpdateBookDto = z.object({
     author: z.string().max(120).optional().nullable(),
     description: z.string().max(2000).optional().nullable(),
 
-    isbn: z.string().trim().min(1).max(13).optional().nullable(),
+    isbn: z.string().trim().min(1).optional().nullable(),
     category: z.string().min(1).optional().nullable(),
     condition: BookCondition.nullable().optional(),
 });
