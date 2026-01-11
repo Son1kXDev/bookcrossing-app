@@ -10,14 +10,25 @@
         <span class="opacity-70">Баланс:</span>
         <b class="ml-1 text-slate-900">{{ balance }}</b>
       </div>
-    } @else {
-      <a class="btn btn-secondary" routerLink="/login">Войти</a>
     }
+
+    <div class="w-full sm:w-[340px]">
+      <input
+        (input)="onSearchInput()"
+        [(ngModel)]="searchQuery"
+        class="input"
+        name="searchQuery"
+        placeholder="Поиск по названию или автору..."
+      />
+      @if(searching){
+        <div class="mt-1 text-xs text-slate-500">Поиск...</div>
+      }
+    </div>
   </header>
 
   @if(loading){
     <div class="card">
-      <div class="card-body muted">Загрузка…</div>
+      <div class="card-body muted">Загрузка...</div>
     </div>
   } @else if(error){
     <div class="card">
@@ -27,128 +38,132 @@
     </div>
   } @else {
 
-    @if(books.length === 0){
+    @if(filteredBooks.length === 0){
       <div class="card">
-        <div class="card-body space-y-3">
-          <div class="font-semibold">Сейчас нет доступных книг</div>
-          <div class="text-sm text-slate-600">
-            Загляните позже или попросите друзей добавить книги.
-          </div>
+        <div class="card-body">
+          <div class="font-medium">Ничего не найдено</div>
 
-          @if(!auth.hasToken()){
-            <div class="flex flex-wrap gap-2">
-              <a class="btn btn-primary" routerLink="/register">Создать аккаунт</a>
-              <a class="btn btn-secondary" routerLink="/login">Войти</a>
+          @if(auth.hasToken()) {
+            <div class="text-sm text-slate-600">
+              Хотите пополнить каталог? Добавьте свою книгу в разделе «Мои книги».
+            </div>
+            <div class="flex flex-wrap py-2 gap-2">
+              <a class="btn btn-primary" routerLink="/books/new">Добавить книгу</a>
+              <a class="btn btn-secondary" routerLink="/books/my">Мои книги</a>
             </div>
           } @else {
             <div class="text-sm text-slate-600">
-              Хотите пополнить каталог? Добавьте свою книгу в «Мои книги».
+              Войдите, чтобы добавить свои книги в каталог.
             </div>
-            <div class="flex flex-wrap gap-2">
-              <a class="btn btn-primary" routerLink="/books/new">Добавить книгу</a>
-              <a class="btn btn-secondary" routerLink="/books/my">Мои книги</a>
+            <div class="flex flex-wrap py-2 gap-2">
+              <a class="btn btn-primary" routerLink="/login">Войти</a>
+              <a class="btn btn-secondary" routerLink="/register">Регистрация</a>
             </div>
           }
         </div>
       </div>
     } @else {
-
-      <div class="grid gap-3">
-        @for(b of books; track b.id) {
-          <div class="card">
-            <div class="card-body space-y-3">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex gap-3 items-start min-w-0">
-                  @if(b.coverUrl){
-                    <img
-                      class="h-[400px] w-[225px] rounded-xl object-cover border border-slate-200"
-                      [ngSrc]="coverSrc(b.coverUrl)"
-                      width="225"
-                      height="400"
-                      alt="cover"
-                    />
-                  } @else {
-                    <div class="h-[400px] w-[225px] rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-xs text-slate-500">
-                      Нет обложки
-                    </div>
-                  }
-
-                  <div class="min-w-0 space-y-1">
-                    <div class="font-semibold truncate">{{ b.title }}</div>
-
-                    @if(b.author){
-                      <div class="text-sm text-slate-600 truncate">Автор: {{ b.author }}</div>
-                    }
-
-                    <div class="flex flex-wrap gap-2 mt-2">
-                      @if(b.category){
-                        <span class="badge badge-neutral">{{ b.category }}</span>
-                      }
-                      @if(b.condition){
-                        <span class="badge badge-neutral">{{ conditionLabel(b.condition) }}</span>
-                      }
-                      @if(b.isbn){
-                        <span class="badge badge-neutral">ISBN: {{ b.isbn }}</span>
-                      }
-                    </div>
-
-                    @if(b.owner){
-                      <div class="text-sm text-slate-600">
-                        Владелец:
-                        <a class="link" [routerLink]="['/user', b.owner.id]">
-                          {{ b.owner.displayName }}
-                        </a>
+      @if(normalizedQuery){
+        <div class="text-sm text-slate-600">
+          Найдено: <b class="text-slate-900">{{ filteredBooks.length }}</b>
+        </div>
+      }
+        <div class="grid gap-3">
+          @for(b of filteredBooks; track b.id) {
+            <div class="card">
+              <div class="card-body space-y-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex gap-3 items-start min-w-0">
+                    @if(b.coverUrl){
+                      <img
+                        class="h-[400px] w-[225px] rounded-xl object-cover border border-slate-200"
+                        [ngSrc]="coverSrc(b.coverUrl)"
+                        width="225"
+                        height="400"
+                        alt="cover"
+                      />
+                    } @else {
+                      <div class="h-[400px] w-[225px] rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-xs text-slate-500">
+                        Нет обложки
                       </div>
                     }
 
-                    <div class="flex flex-wrap gap-2 pt-1">
-                      <span class="badge badge-green">Доступна</span>
+                    <div class="min-w-0 space-y-1">
+                      <div class="font-semibold truncate">{{ b.title }}</div>
 
-                      @if(b.owner?.id === auth.userInfo?.id){
-                        <span class="badge badge-neutral">Моя книга</span>
+                      @if(b.author){
+                        <div class="text-sm text-slate-600 truncate">Автор: {{ b.author }}</div>
                       }
+
+                      <div class="flex flex-wrap gap-2 mt-2">
+                        @if(b.category){
+                          <span class="badge badge-neutral">{{ b.category }}</span>
+                        }
+                        @if(b.condition){
+                          <span class="badge badge-neutral">{{ conditionLabel(b.condition) }}</span>
+                        }
+                        @if(b.isbn){
+                          <span class="badge badge-neutral">ISBN: {{ b.isbn }}</span>
+                        }
+                      </div>
+
+                      @if(b.owner){
+                        <div class="text-sm text-slate-600">
+                          Владелец:
+                          <a class="link" [routerLink]="['/user', b.owner.id]">
+                            {{ b.owner.displayName }}
+                          </a>
+                        </div>
+                      }
+
+                      <div class="flex flex-wrap gap-2 pt-1">
+                        <span class="badge badge-green">Доступна</span>
+
+                        @if(b.owner?.id === auth.userInfo?.id){
+                          <span class="badge badge-neutral">Моя книга</span>
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              @if(b.description){
-                <div class="text-sm text-slate-700 whitespace-pre-wrap">{{ b.description }}</div>
-              }
+                @if(b.description){
+                  <div class="text-sm text-slate-700 whitespace-pre-wrap">{{ b.description }}</div>
+                }
 
-              @if(b.owner?.id !== auth.userInfo?.id) {
-                <div class="flex flex-wrap items-center gap-3">
-                  <button
-                    class="btn btn-primary"
-                    [disabled]="busyId === b.id || (auth.hasToken() && balance < 1)"
-                    (click)="createDeal(b)"
-                  >
-                    {{ busyId === b.id ? "Бронирование…" : "Забронировать" }}
-                  </button>
+                @if(b.owner?.id !== auth.userInfo?.id) {
+                  <div class="flex flex-wrap items-center gap-3">
+                    <button
+                      class="btn btn-primary"
+                      [disabled]="busyId === b.id || (auth.hasToken() && balance < 1)"
+                      (click)="createDeal(b)"
+                    >
+                      {{ busyId === b.id ? "Бронирование..." : "Забронировать" }}
+                    </button>
 
-                  @if(auth.hasToken() && balance < 1){
-                    <span class="text-sm text-red-600">Недостаточно монет</span>
-                  }
+                    @if(auth.hasToken() && balance < 1){
+                      <span class="text-sm text-red-600">Недостаточно монет</span>
+                    }
 
-                  @if(!auth.hasToken()){
-                    <span class="text-sm text-slate-600">Войдите, чтобы забронировать книгу</span>
-                  }
+                    @if(!auth.hasToken()){
+                      <span class="text-sm text-slate-600">Войдите, чтобы забронировать книгу</span>
+                    }
+                  </div>
+                } @else {
+                  <div class="text-sm text-slate-600">
+                    Это ваша книга — она отображается в разделе «Мои книги».
+                  </div>
+                }
+
+                <div class="divider"></div>
+
+                <div class="text-xs text-slate-500">
+                  ID книги: {{ b.id }}
                 </div>
-              } @else {
-                <div class="text-sm text-slate-600">
-                  Это ваша книга — она отображается в разделе «Мои книги».
-                </div>
-              }
-
-              <div class="divider"></div>
-
-              <div class="text-xs text-slate-500">
-                ID книги: {{ b.id }}
               </div>
             </div>
-          </div>
-        }
-      </div>
+          }
+        </div>
     }
   }
 </div>

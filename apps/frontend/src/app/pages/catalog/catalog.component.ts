@@ -7,13 +7,15 @@ import {BooksService} from '../../services/books.service';
 import {WalletService} from '../../services/wallet.service';
 import {RuntimeConfigService} from '../../core/runtime-config.service';
 import {NgOptimizedImage} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
   imports: [
     NgOptimizedImage,
-    RouterLink
+    RouterLink,
+    FormsModule
   ],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.scss'
@@ -24,6 +26,9 @@ export class CatalogComponent implements OnInit {
   error = "";
   busyId: string | null = null;
   balance = 0;
+  searchQuery = "";
+  searching = false;
+  private searchTimer: any = null;
 
   constructor(
     private booksApi: BooksService,
@@ -33,6 +38,20 @@ export class CatalogComponent implements OnInit {
     private wallet: WalletService,
     private cfg: RuntimeConfigService
   ) {}
+
+  get normalizedQuery():string {
+    return (this.searchQuery || "").trim().toLowerCase();
+  }
+
+  get filteredBooks(): BookDto[] {
+    const q = this.normalizedQuery;
+    if (!q) return this.books;
+    return this.books.filter(b => {
+        const title = (b.title ?? '').toLowerCase();
+        const author = (b.author ?? '').toLowerCase();
+        return title.includes(q) || author.includes(q);
+      });
+  }
 
   async ngOnInit() {
     if (this.auth.hasToken()) {
@@ -58,6 +77,14 @@ export class CatalogComponent implements OnInit {
     }
   }
 
+  onSearchInput(){
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searching = true;
+    this.searchTimer = setTimeout(() => {
+      this.searching = false;
+    }, 300);
+  }
+
   coverSrc(coverUrl: string) {
     if (coverUrl.startsWith("http")) return coverUrl;
     return `${this.cfg.apiUrl}${coverUrl}`;
@@ -67,8 +94,9 @@ export class CatalogComponent implements OnInit {
     switch (v) {
       case "new": return "Новая";
       case "like_new": return "Как новая";
+      case "very_good": return "Отличное";
       case "good": return "Хорошее";
-      case "fair": return "Удовлетворительное";
+      case "acceptable": return "Удовлетворительное";
       case "poor": return "Плохое";
       default: return v ?? "";
     }

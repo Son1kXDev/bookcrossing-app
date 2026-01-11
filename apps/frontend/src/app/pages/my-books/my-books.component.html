@@ -12,7 +12,7 @@
 
   @if(loading){
     <div class="card">
-      <div class="card-body muted">Загрузка…</div>
+      <div class="card-body muted">Загрузка...</div>
     </div>
   } @else if(error){
     <div class="card">
@@ -115,7 +115,7 @@
                     [disabled]="b.status === 'reserved' || busyId === b.id"
                     (click)="remove(b)"
                   >
-                    {{ busyId === b.id ? "Удаление…" : "Удалить" }}
+                    {{ busyId === b.id ? "Удаление..." : "Удалить" }}
                   </button>
                 </div>
               </div>

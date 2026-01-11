@@ -42,8 +42,9 @@ export class MyBooksComponent implements OnInit {
     switch (v) {
       case "new": return "Новая";
       case "like_new": return "Как новая";
+      case "very_good": return "Отличное";
       case "good": return "Хорошее";
-      case "fair": return "Удовлетворительное";
+      case "acceptable": return "Удовлетворительное";
       case "poor": return "Плохое";
       default: return v ?? "";
     }
