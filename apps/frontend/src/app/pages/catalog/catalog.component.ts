@@ -66,7 +66,7 @@ export class CatalogComponent implements OnInit {
     try {
       await this.dealsApi.create(b.id);
       await this.reload();
-      await this.router.navigateByUrl("/deals/my");
+      await this.router.navigateByUrl("/deals");
     } catch (e: any) {
       this.error = "Не удалось создать сделку (возможно, книга уже зарезервирована).";
     } finally {
