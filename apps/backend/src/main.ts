@@ -9,6 +9,7 @@ import {buildShippingService} from "./di/shipping.js";
 import {makeCdekRouter} from "./cdek/cdek.routes.js";
 import path from "path";
 import {fileURLToPath} from "url";
+import {usersRouter} from "./users/users.routes.js";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(
 app.use(express.json());
 app.get("/health", (_, res) => res.json({ok: true}));
 app.use("/auth", authRouter);
+app.use("/users", usersRouter);
 app.use("/wallet", walletRouter);
 app.use("/books", booksRouter);
 const shipping = buildShippingService();
