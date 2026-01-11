@@ -7,7 +7,7 @@ export const CreateBookDto = z.object({
     author: z.string().max(120).optional(),
     description: z.string().max(2000).optional(),
 
-    isbn: z.string().trim().min(1).max(13).optional(),
+    isbn: z.string().trim().min(1).optional(),
     category: z.string().min(1).optional(),
     condition: BookCondition.nullable().optional(),
 });
