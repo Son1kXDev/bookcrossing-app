@@ -14,6 +14,7 @@ booksRouter.get("/", async (_req, res) => {
             title: true,
             author: true,
             description: true,
+            coverUrl: true,
             status: true,
             createdAt: true,
             owner: {select: {id: true, displayName: true}},
@@ -35,7 +36,7 @@ booksRouter.get("/my", authGuard, async (req, res) => {
     const books = await prisma.book.findMany({
         where: {ownerId: userId},
         orderBy: {createdAt: "desc"},
-        select: {id: true, title: true, author: true, description: true, status: true, createdAt: true},
+        select: {id: true, title: true, author: true, description: true, coverUrl: true, status: true, createdAt: true},
     });
 
     return res.json(books.map(b => ({...b, id: b.id.toString()})));
@@ -56,7 +57,7 @@ booksRouter.post("/", authGuard, async (req, res) => {
             author: parsed.data.author,
             description: parsed.data.description,
         },
-        select: {id: true, title: true, author: true, description: true, status: true, createdAt: true},
+        select: {id: true, title: true, author: true, description: true, coverUrl: true, status: true, createdAt: true},
     });
 
     return res.status(201).json({...book, id: book.id.toString()});
