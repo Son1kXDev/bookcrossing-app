@@ -31,7 +31,7 @@
         [class.opacity-40]="busy"
         class="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 cursor-pointer"
       >
-        {{ busy ? "Загрузка…" : (coverFile ? "Заменить" : "Загрузить") }}
+        {{ busy ? "Загрузка..." : (coverFile ? "Заменить" : "Загрузить") }}
         <input
           (change)="onFile($event)"
           [disabled]="busy"
@@ -80,7 +80,7 @@
       }
 
       @if(searching){
-        <div class="muted">Поиск…</div>
+        <div class="muted">Поиск...</div>
       } @else if(searchResults.length > 0) {
         <div class="border border-slate-200 rounded-2xl overflow-hidden divide-y">
           @for(b of searchResults; track b.id){
@@ -143,7 +143,7 @@
         [(ngModel)]="description"
         class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
         name="description"
-        placeholder="Коротко опишите состояние и особенности книги…"
+        placeholder="Коротко опишите состояние и особенности книги..."
         rows="6"
       ></textarea>
     </label>
@@ -182,7 +182,7 @@
         [disabled]="busy || !title.trim()"
         class="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
       >
-        {{ busy ? "Сохранение…" : "Сохранить" }}
+        {{ busy ? "Сохранение..." : "Сохранить" }}
       </button>
     </div>
   </section>

@@ -12,7 +12,7 @@
 
   @if(loading){
     <div class="card">
-      <div class="card-body muted">Загрузка…</div>
+      <div class="card-body muted">Загрузка...</div>
     </div>
   } @else if(error){
     <div class="badge badge-red">{{ error }}</div>
@@ -157,7 +157,7 @@
           }
 
           <button class="btn btn-primary" (click)="saveProfile()" [disabled]="editBusy">
-            {{ editBusy ? "Сохраняю…" : "Сохранить" }}
+            {{ editBusy ? "Сохранение..." : "Сохранить" }}
           </button>
         </div>
       </div>
@@ -184,7 +184,7 @@
           }
 
           <button class="btn btn-primary" (click)="changePassword()" [disabled]="passBusy">
-            {{ passBusy ? "Меняю…" : "Изменить" }}
+            {{ passBusy ? "Изменение..." : "Изменить" }}
           </button>
         </div>
       </div>
@@ -206,7 +206,7 @@
           }
 
           <button class="btn btn-danger" (click)="deleteAccount()" [disabled]="delBusy">
-            {{ delBusy ? "Удаляю…" : "Удалить аккаунт" }}
+            {{ delBusy ? "Удаление..." : "Удалить аккаунт" }}
           </button>
         </div>
       </div>

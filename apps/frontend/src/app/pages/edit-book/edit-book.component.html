@@ -5,7 +5,7 @@
   </header>
 
   @if(loading){
-    <div class="rounded-2xl border border-gray-950/10 bg-white p-4 opacity-70">Загрузка…</div>
+    <div class="rounded-2xl border border-gray-950/10 bg-white p-4 opacity-70">Загрузка...</div>
   } @else {
 
     <section class="rounded-3xl border border-gray-950/10 bg-white p-5 space-y-3">
@@ -35,7 +35,7 @@
           class="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 cursor-pointer"
           [class.opacity-40]="busy"
         >
-          {{ loading || busy ? "Загрузка…" : (coverUrl ? "Заменить" : "Загрузить") }}
+          {{ loading || busy ? "Загрузка..." : (coverUrl ? "Заменить" : "Загрузить") }}
           <input type="file" accept="image/*" class="hidden" (change)="onFile($event)" [disabled]="busy" />
         </label>
 
@@ -78,7 +78,7 @@
           [(ngModel)]="description"
           name="description"
           rows="6"
-          placeholder="Коротко опишите состояние и особенности книги…"
+          placeholder="Коротко опишите состояние и особенности книги..."
           class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
         ></textarea>
       </label>
@@ -117,7 +117,7 @@
           [disabled]="!canSubmit()"
           class="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
         >
-          {{ busy ? "Сохранение…" : "Сохранить" }}
+          {{ busy ? "Сохранение..." : "Сохранить" }}
         </button>
       </div>
     </section>
