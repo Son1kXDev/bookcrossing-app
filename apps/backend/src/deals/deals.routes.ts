@@ -90,7 +90,7 @@ export function makeDealsRouter(shipping: ShippingService) {
         return res.json(deals.map(mapDeal));
     });
 
-    dealsRouter.get("/user/:id", authGuard, async (req, res) => {
+    dealsRouter.get("/user/:id", async (req, res) => {
         const idStr = getParamId(req, "id");
         if (!idStr) return res.status(400).json({error: "INVALID_USER_ID"});
 
@@ -118,7 +118,7 @@ export function makeDealsRouter(shipping: ShippingService) {
                 seller: {select: {id: true, displayName: true}},
             },
         });
-        
+
         return res.json(deals.map(mapDeal));
     });
 
