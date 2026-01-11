@@ -3,12 +3,14 @@ import {BookDto} from '../../core/api.types';
 import {BooksService} from '../../services/books.service';
 import {RouterLink} from '@angular/router';
 import {RuntimeConfigService} from '../../core/runtime-config.service';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-my-books',
   standalone: true,
   imports: [
-    RouterLink
+    RouterLink,
+    NgOptimizedImage
   ],
   templateUrl: './my-books.component.html',
   styleUrl: './my-books.component.scss'

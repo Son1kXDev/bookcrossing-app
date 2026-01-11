@@ -1,0 +1,104 @@
+<div class="page space-y-6">
+  <header class="flex items-start justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Профиль пользователя</h1>
+      <div class="text-sm text-slate-600">Публичная информация и статистика</div>
+    </div>
+
+    <a class="btn btn-secondary" routerLink="/catalog">В каталог</a>
+  </header>
+
+  @if(loading){
+    <div class="card">
+      <div class="card-body muted">Загрузка…</div>
+    </div>
+  } @else if(error){
+    <div class="badge badge-red">{{ error }}</div>
+  } @else if(user){
+
+    <section class="card">
+      <div class="card-body flex flex-col sm:flex-row sm:items-center gap-4">
+        <div class="flex items-center gap-4 min-w-0">
+          @if(user.avatarUrl){
+            <img
+              class="h-14 w-14 rounded-2xl border border-slate-200 object-cover bg-slate-50"
+              [src]="avatarSrc(user.avatarUrl!)"
+              alt="avatar"
+            />
+          } @else {
+            <div
+              class="h-14 w-14 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center font-semibold text-slate-700"
+              aria-hidden="true"
+            >
+              {{ initialsOf(user.displayName) }}
+            </div>
+          }
+
+          <div class="min-w-0">
+            <div class="text-lg font-semibold truncate">{{ user.displayName }}</div>
+
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+              <span class="badge badge-neutral">
+                Роль: {{ roleDisplay(user.role) }}
+              </span>
+
+              <span class="badge badge-neutral">
+                На сервисе с {{ user.createdAt | date:'dd.MM.yyyy' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid gap-3 sm:grid-cols-2">
+      <div class="card">
+        <div class="card-body space-y-2">
+          <div class="section-title">Книги</div>
+
+          <div class="flex items-center justify-between">
+            <div class="muted">Всего книг</div>
+            <div class="font-semibold">{{ stats.booksTotal }}</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="flex flex-wrap gap-2">
+            <span class="badge badge-green">Доступно: {{ stats.booksAvailable }}</span>
+            <span class="badge badge-yellow">Зарезервировано: {{ stats.booksReserved }}</span>
+            <span class="badge badge-neutral">Передано: {{ stats.booksExchanged }}</span>
+          </div>
+
+          @if(stats.booksTotal === 0){
+            <div class="text-sm text-slate-600">
+              У пользователя пока нет книг.
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body space-y-2">
+          <div class="section-title">Сделки</div>
+
+          <div class="flex items-center justify-between">
+            <div class="muted">Как покупатель</div>
+            <div class="font-semibold">{{ stats.outgoingTotal }}</div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="muted">Как продавец</div>
+            <div class="font-semibold">{{ stats.incomingTotal }}</div>
+          </div>
+
+          @if(stats.outgoingTotal + stats.incomingTotal === 0){
+            <div class="text-sm text-slate-600">
+              У пользователя пока нет сделок.
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+  }
+</div>

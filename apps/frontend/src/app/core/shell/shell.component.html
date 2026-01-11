@@ -1,23 +1,23 @@
 <div class="min-h-screen">
-  <header class="sticky top-0 z-10 border-b border-gray-950/10 bg-white/80 backdrop-blur">
+  <header class="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
     <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-      <a class="font-semibold tracking-wide" routerLink="/catalog">
+      <a class="font-semibold tracking-tight text-slate-900" routerLink="/catalog">
         BookCrossing
       </a>
 
-      <nav class="flex items-center gap-2">
+      <nav class="flex items-center gap-1">
         <a
           [routerLinkActiveOptions]="{ exact: true }"
-          class="px-3 py-2 rounded-lg text-sm hover:bg-gray-950/5"
+          class="btn btn-ghost px-3 py-2"
           routerLink="/catalog"
-          routerLinkActive="bg-gray-950/10"
+          routerLinkActive="bg-slate-100"
         >Каталог</a>
 
         @if(auth.hasToken()){
           <a
-            class="px-3 py-2 rounded-lg text-sm hover:bg-gray-950/5"
+            class="btn btn-ghost px-3 py-2"
             routerLink="/books/my"
-            routerLinkActive="bg-gray-950/10"
+            routerLinkActive="bg-slate-100"
           >
             Мои книги
             <a class="hidden" routerLink="/books/new"></a>
@@ -25,14 +25,14 @@
           </a>
 
           <a
-            class="relative px-3 py-2 rounded-lg text-sm hover:bg-gray-950/5"
+            class="relative btn btn-ghost px-3 py-2"
             routerLink="/deals"
-            routerLinkActive="bg-gray-950/10"
+            routerLinkActive="bg-slate-100"
           >
             Мои сделки
             @if(dealsBadge > 0){
               <span
-                class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[11px] leading-5 text-center"
+                class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[11px] leading-5 text-center shadow-sm"
               >
                 {{ dealsBadge > 9 ? '9+' : dealsBadge }}
               </span>
@@ -40,29 +40,28 @@
           </a>
 
           <a
-            class="px-3 py-2 rounded-lg text-sm hover:bg-gray-950/5"
+            class="btn btn-ghost px-3 py-2"
             routerLink="/profile"
-            routerLinkActive="bg-gray-950/10"
+            routerLinkActive="bg-slate-100"
           >
             Профиль
           </a>
         }
-
       </nav>
 
-      @if(auth.hasToken()){
-        <button (click)="logout()" class="text-sm px-3 py-1 rounded-lg border border-gray-950/10 hover:bg-gray-950/5">
-          Выйти
-        </button>
-      } @else {
-        <a class="text-sm px-3 py-2 rounded-lg border border-gray-950/10 hover:bg-gray-950/5" routerLink="/login">
-          Войти
-        </a>
-      }
+      <div class="flex items-center gap-2">
+        @if(auth.hasToken()){
+          <button (click)="logout()" class="btn btn-secondary">
+            Выйти
+          </button>
+        } @else {
+          <a class="btn btn-secondary" routerLink="/login">Войти</a>
+        }
+      </div>
     </div>
   </header>
 
-  <main class="mx-auto max-w-5xl px-4 py-6">
+  <main class="page">
     <router-outlet />
   </main>
 </div>

@@ -12,6 +12,7 @@ model User {
   passwordHash String   @map("password_hash")
   displayName  String   @map("display_name")
   role         String   @default("user")
+  avatarUrl    String?  @map("avatar_url")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 

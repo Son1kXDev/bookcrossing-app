@@ -9,6 +9,7 @@ export type UserDto = {
   email: string;
   displayName: string;
   role: string;
+  avatarUrl?: string | null;
   createdAt: string;
   wallet?: { balance: number; updatedAt: string } | null;
 };
@@ -52,6 +53,19 @@ export class AuthService {
       this.http.get<UserDto>(`${this.cfg.apiUrl}/auth/me`)
     );
   }
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<{ ok: true }> {
+    return await firstValueFrom(
+      this.http.post<{ ok: true }>(`${this.cfg.apiUrl}/auth/change-password`, { currentPassword, newPassword })
+    );
+  }
+
+  async deleteMe(password: string): Promise<{ ok: true }> {
+    return await firstValueFrom(
+      this.http.request<{ ok: true }>("delete", `${this.cfg.apiUrl}/auth/me`, { body: { password } })
+    );
+  }
+
 
   logout(){
     this.tokenStorage.clear();

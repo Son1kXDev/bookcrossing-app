@@ -90,6 +90,38 @@ export function makeDealsRouter(shipping: ShippingService) {
         return res.json(deals.map(mapDeal));
     });
 
+    dealsRouter.get("/user/:id", authGuard, async (req, res) => {
+        const idStr = getParamId(req, "id");
+        if (!idStr) return res.status(400).json({error: "INVALID_USER_ID"});
+
+        let userId: bigint;
+        try {
+            userId = toBigInt(idStr);
+        } catch {
+            return res.status(400).json({error: "INVALID_USER_ID"});
+        }
+
+
+        const deals = await prisma.deal.findMany({
+            where: {
+                OR: [
+                    {buyerId: userId},
+                    {sellerId: userId},
+                ],
+            },
+            orderBy: {createdAt: "desc"},
+            select: {
+                id: true, status: true, createdAt: true, acceptedAt: true, pickupPointId: true,
+                trackingNumber: true, sellerShippedAt: true, buyerReceivedAt: true,
+                book: {select: {id: true, title: true}},
+                buyer: {select: {id: true, displayName: true}},
+                seller: {select: {id: true, displayName: true}},
+            },
+        });
+        
+        return res.json(deals.map(mapDeal));
+    });
+
     dealsRouter.get("/incoming", authGuard, async (req, res) => {
         const sellerId = (req as AuthedRequest).userId;
 
