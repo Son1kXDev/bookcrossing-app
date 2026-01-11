@@ -26,4 +26,5 @@ export const env = {
     CDEK_CLIENT_ID: optional("CDEK_CLIENT_ID"),
     CDEK_CLIENT_SECRET: optional("CDEK_CLIENT_SECRET"),
     CDEK_BASE_URL: optional("CDEK_BASE_URL"),
+    UPLOADS_DIR: required("UPLOADS_DIR"),
 };

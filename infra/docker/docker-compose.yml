@@ -22,6 +22,9 @@ services:
       PORT: 3000
       DATABASE_URL: postgresql://bookcrossing:${POSTGRES_PASSWORD}@postgres:5432/bookcrossing?schema=public
       JWT_SECRET: ${JWT_SECRET}
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       - postgres
     networks:
@@ -43,6 +46,7 @@ services:
 
 volumes:
   bookcrossing_pgdata:
+  uploads_data:
 
 networks:
   bookcrossing_net:

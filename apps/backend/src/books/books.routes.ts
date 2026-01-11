@@ -2,38 +2,14 @@
 import {prisma} from "../db/prisma.js";
 import {type AuthedRequest, authGuard} from "../auth/auth-middleware.js";
 import {CreateBookDto, UpdateBookDto} from "./books.dto.js";
-import {getParamId, toBigInt} from "../core/utilities.js";
-import multer from "multer";
+import {ensureUploadsDir, extFromMime, getParamId, isAllowedMime, toBigInt, upload} from "../core/utilities.js";
 import path from "path";
-import {fileURLToPath} from "url";
 import {promises as fs} from "fs";
+import {UPLOADS_DIR} from "../core/uploads.js";
 
 export const booksRouter = Router();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadsDir = path.join(__dirname, "..", "..", "uploads");
-
-async function ensureUploadsDir() {
-    await fs.mkdir(uploadsDir, {recursive: true});
-}
-
-function extFromMime(mime: string) {
-    if (mime === "image/jpeg") return ".jpg";
-    if (mime === "image/png") return ".png";
-    if (mime === "image/webp") return ".webp";
-    return "";
-}
-
-function isAllowedMime(mime: string) {
-    return mime === "image/jpeg" || mime === "image/png" || mime === "image/webp";
-}
-
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: {fileSize: 2 * 1024 * 1024},
-});
+const uploadsDir = UPLOADS_DIR;
 
 booksRouter.get("/", async (_req, res) => {
     const books = await prisma.book.findMany({
