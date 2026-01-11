@@ -5,6 +5,7 @@ import {AuthService} from '../../auth/auth.service';
 import {DealsService} from '../../services/deals.service';
 import {BooksService} from '../../services/books.service';
 import {WalletService} from '../../services/wallet.service';
+import {RuntimeConfigService} from '../../core/runtime-config.service';
 
 @Component({
   selector: 'app-catalog',
@@ -25,7 +26,8 @@ export class CatalogComponent implements OnInit {
     private dealsApi: DealsService,
     public auth: AuthService,
     private router: Router,
-    private wallet: WalletService
+    private wallet: WalletService,
+    private cfg: RuntimeConfigService
   ) {}
 
   async ngOnInit() {
@@ -48,6 +50,11 @@ export class CatalogComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  coverSrc(coverUrl: string) {
+    if (coverUrl.startsWith("http")) return coverUrl;
+    return `${this.cfg.apiUrl}${coverUrl}`;
   }
 
   statusLabel(s: BookDto["status"]) {

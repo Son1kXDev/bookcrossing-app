@@ -16,6 +16,7 @@ export type BookDto = {
   title: string;
   author?: string;
   description?: string;
+  coverUrl?: string | null;
   status: 'available' | 'reserved' | 'exchanged';
   createdAt: string;
   owner?: UserShortDto;

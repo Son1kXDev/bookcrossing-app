@@ -27,4 +27,15 @@ export class BooksService {
   delete(bookId: string) {
     return firstValueFrom(this.http.delete<{ ok: true }>(`${this.cfg.apiUrl}/books/${bookId}`));
   }
+
+  uploadCover(bookId: string, file: File): Promise<BookDto> {
+    const fd = new FormData();
+    fd.append("file", file);
+    return firstValueFrom(this.http.post<BookDto>(`${this.cfg.apiUrl}/books/${bookId}/cover`, fd));
+  }
+
+  deleteCover(bookId: string): Promise<{ ok: true }> {
+    return firstValueFrom(this.http.delete<{ ok: true }>(`${this.cfg.apiUrl}/books/${bookId}/cover`));
+  }
+
 }
