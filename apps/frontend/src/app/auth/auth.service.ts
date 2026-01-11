@@ -26,6 +26,11 @@ export class AuthService {
     private tokenStorage: TokenStorage
   ) {}
 
+  get userInfo(): UserDto | null {
+    const userInfo = localStorage.getItem('userInfo');
+    return userInfo ? JSON.parse(userInfo) as UserDto : null;
+  }
+
   async register(email: string, password: string, displayName: string): Promise<UserDto> {
     const res = await firstValueFrom(
       this.http.post<AuthResponse>(`${this.cfg.apiUrl}/auth/register`, { email, password, displayName })
@@ -50,10 +55,19 @@ export class AuthService {
 
   logout(){
     this.tokenStorage.clear();
+    this.clearUserInfo();
   }
 
   hasToken(): boolean {
     return !!this.tokenStorage.get();
+  }
+
+  saveUserInfo(user: UserDto) {
+    localStorage.setItem('userInfo', JSON.stringify(user));
+  }
+
+  clearUserInfo(){
+    localStorage.removeItem('userInfo');
   }
 
 }
