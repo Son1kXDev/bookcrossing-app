@@ -40,7 +40,7 @@ export class CatalogComponent implements OnInit {
     this.loading = true;
     this.error = "";
     try {
-      this.books = await this.booksApi.listAll();
+      this.books = (await this.booksApi.listAll()).filter(b => b.status === "available");
       const wallet = await this.wallet.get();
       this.balance = wallet?.balance ?? 0;
     } catch {
