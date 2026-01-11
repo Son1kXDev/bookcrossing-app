@@ -1,11 +1,18 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService, UserDto} from '../../auth/auth.service';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
+import {DatePipe, registerLocaleData} from '@angular/common';
+import localeRu from '@angular/common/locales/ru';
+
+registerLocaleData(localeRu);
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [],
+  imports: [
+    RouterLink,
+    DatePipe
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })

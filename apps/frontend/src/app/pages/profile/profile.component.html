@@ -1,30 +1,94 @@
-<div class="min-h-screen p-6">
-  <div class="max-w-xl mx-auto rounded-xl border p-6">
-    <div class="flex items-center justify-between gap-4">
-      <h1 class="text-2xl font-semibold">Профиль</h1>
-      <button (click)="logout()" class="border rounded-lg px-3 py-2">Выйти</button>
+<div class="page space-y-4">
+  <header class="flex items-start justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Профиль</h1>
+      <div class="text-sm text-slate-600">Информация о вашем аккаунте и балансе</div>
     </div>
 
-    @if(loading){
-      <div class="mt-4">Загрузка...</div>
-    } @else if (user) {
-      <div class="mt-4 space-y-2">
-        <div><span class="opacity-70">Имя:</span> {{ user.displayName }}</div>
-        <div><span class="opacity-70">Email:</span> {{ user.email }}</div>
-        <div><span class="opacity-70">Роль:</span> {{ roleDisplay(user.role) }}</div>
+    <button (click)="logout()" class="btn btn-secondary">
+      Выйти
+    </button>
+  </header>
 
-        <div class="pt-3 border-t mt-3">
-          <div class="text-lg">
-            <span class="opacity-70">Баланс: </span>
-            <b>{{ user.wallet?.balance ?? 0 }}</b>
+  @if(loading){
+    <div class="card">
+      <div class="card-body muted">Загрузка…</div>
+    </div>
+  } @else if(error){
+    <div class="badge badge-red">{{ error }}</div>
+  } @else if(user) {
+
+    <div class="grid gap-3 md:grid-cols-2">
+      <section class="card">
+        <div class="card-body space-y-3">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="text-sm text-slate-600">Имя</div>
+              <div class="text-lg font-semibold truncate">{{ user.displayName }}</div>
+            </div>
+
+            <span class="badge"
+                  [class.badge-green]="user.role === 'admin'"
+                  [class.badge-neutral]="user.role !== 'admin'">
+              {{ roleDisplay(user.role) }}
+            </span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="space-y-2">
+            <div>
+              <div class="text-sm text-slate-600">Email</div>
+              <div class="text-sm font-medium break-all">{{ user.email }}</div>
+            </div>
+
+            <div>
+              <div class="text-sm text-slate-600">ID пользователя</div>
+              <div class="text-xs text-slate-600 break-all">{{ user.id }}</div>
+            </div>
+
+            <div>
+              <div class="text-sm text-slate-600">Создан</div>
+              <div class="text-sm">{{ user.createdAt | date: 'long' : undefined : 'ru' }}</div>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section class="card">
+        <div class="card-body space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-slate-600">Баланс</div>
+              <div class="text-2xl font-semibold tracking-tight">
+                {{ user.wallet?.balance ?? 0 }}
+              </div>
+            </div>
+
+            <span class="badge badge-neutral">
+              Монеты
+            </span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="text-sm text-slate-600">
+            Баланс используется для создания сделки на книгу (1 книга = 1 монета).
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <a routerLink="/catalog" class="btn btn-primary">Перейти в каталог</a>
+            <a routerLink="/deals" class="btn btn-secondary">Мои сделки</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  } @else {
+    <div class="card">
+      <div class="card-body muted">
+        Данные профиля не найдены.
       </div>
-    }
-
-    @if(error){
-      <p class="text-sm text-red-600 mt-3">{{ error }}</p>
-    }
-
-  </div>
+    </div>
+  }
 </div>
