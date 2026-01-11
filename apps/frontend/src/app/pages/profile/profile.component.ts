@@ -16,6 +16,12 @@ export class ProfileComponent implements OnInit {
 
   constructor(private auth: AuthService, private router: Router) {}
 
+  //@TODO: отображать информацию о количестве созданных книг и совершенных сделок пользователя
+  //@TODO: добавить возможность редактирования профиля
+  //@TODO: добавить возможность смены пароля
+  //@TODO: добавить возможность удаления аккаунта
+  //@TODO: добавить аватар пользователя
+  //@TODO: добавить возможность просмотра профилей других пользователей
   async ngOnInit() {
     this.loading = true;
     this.error = "";

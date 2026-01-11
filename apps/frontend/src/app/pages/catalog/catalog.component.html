@@ -1,0 +1,71 @@
+<div class="max-w-4xl mx-auto p-4 space-y-4">
+  <header class="flex items-center justify-between gap-3">
+    <h1 class="text-xl font-semibold">Каталог книг</h1>
+    @if(auth.hasToken()){
+      <div class="text-sm px-3 py-2 rounded-lg bg-black/5">
+        <span class="opacity-70">Баланс:</span>
+        <b class="ml-1">{{ balance }}</b>
+      </div>
+    }
+  </header>
+
+  @if(loading){
+    <div class="opacity-70">Загрузка…</div>
+  } @else if(error){
+    <div class="text-red-600">{{ error }}</div>
+  } @else {
+    <div class="grid gap-3">
+      <div class="rounded-xl border p-4 space-y-2">
+      @for(b of books; track b.id) {
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex gap-3 items-start">
+            @if(b.coverUrl){
+              <img
+                class="h-20 w-16 rounded-lg object-cover border"
+                [src]="coverSrc(b.coverUrl)"
+                alt="cover"
+              />
+            } @else {
+              <div class="h-20 w-16 rounded-lg text-center border bg-black/5 flex items-center justify-center text-xs opacity-60">
+                Обложка отсутствует
+              </div>
+            }
+          <div>
+            <div class="font-medium flex-1">{{ b.title }}</div>
+            @if(b.author){
+              <div class="text-sm opacity-70">Автор: {{ b.author }}</div>
+            }
+            @if(b.owner){
+              <div class="text-sm opacity-70">Владелец: {{ b.owner.displayName }}</div>
+            }
+          </div>
+          </div>
+          <div class="text-xs px-2 py-1 rounded bg-black/5">
+            {{ statusLabel(b.status) }}
+          </div>
+        </div>
+
+        @if(b.description){
+          <div class="text-sm whitespace-pre-wrap opacity-80">{{ b.description }}</div>
+        }
+
+        @if(b.owner?.id != auth.userInfo?.id && b.status === 'available' && busyId !== b.id) {
+          <div class="flex gap-2">
+            <button
+              class="px-3 py-2 rounded-lg bg-black text-white disabled:opacity-40"
+              [disabled]="(auth.hasToken() && balance < 1)"
+              (click)="createDeal(b)"
+            >
+              {{ busyId === b.id ? "Создаю…" : "Забрать (сделка)" }}
+            </button>
+            @if(auth.hasToken() && balance < 1){
+              <div class="text-xs text-red-600 mt-1">Недостаточно монет</div>
+            }
+          </div>
+        }
+      }
+      </div>
+    </div>
+  }
+</div>
+

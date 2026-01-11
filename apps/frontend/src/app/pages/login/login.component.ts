@@ -29,8 +29,9 @@ export class LoginComponent {
     this.error = "";
     this.loading = true;
     try {
-      await this.auth.login(this.email, this.password);
-      await this.router.navigateByUrl("/profile");
+      await this.auth.login(this.email.trim(), this.password.trim());
+      await this.router.navigateByUrl("/catalog");
+      await this.auth.getOrSaveUserInfo();
     } catch (e: any) {
       this.error = "Ошибка входа. Неправильный email или пароль";
     } finally {

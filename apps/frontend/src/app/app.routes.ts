@@ -3,23 +3,27 @@ import {authGuard} from './auth/auth.guard';
 import {LoginComponent} from './pages/login/login.component';
 import {RegisterComponent} from './pages/register/register.component';
 import {ProfileComponent} from './pages/profile/profile.component';
+import {CatalogComponent} from './pages/catalog/catalog.component';
+import {MyBooksComponent} from './pages/my-books/my-books.component';
+import {NewBookComponent} from './pages/new-book/new-book.component';
+import {ShellComponent} from './core/shell/shell.component';
+import {DealsComponent} from './pages/deals/deals.component';
+import {EditBookComponent} from './pages/edit-book/edit-book.component';
 
 export const routes: Routes = [
-  { path: "", pathMatch: "full", redirectTo: "profile" },
-
+  {path: "login", component: LoginComponent,},
+  {path: "register", component: RegisterComponent,},
   {
-    path: "login",
-    component: LoginComponent,
+    path: '',
+    component: ShellComponent,
+    children: [
+      { path: "catalog", component: CatalogComponent },
+      { path: "profile", canActivate: [authGuard], component: ProfileComponent },
+      { path: "books/my", canActivate: [authGuard], component: MyBooksComponent },
+      { path: "books/new", canActivate: [authGuard], component: NewBookComponent },
+      { path: "books/:id/edit", canActivate: [authGuard], component: EditBookComponent },
+      { path: "deals", canActivate: [authGuard], component: DealsComponent },
+      { path: "**", redirectTo: "catalog" },
+    ]
   },
-  {
-    path: "register",
-    component: RegisterComponent,
-  },
-  {
-    path: "profile",
-    canActivate: [authGuard],
-    component: ProfileComponent,
-  },
-
-  { path: "**", redirectTo: "profile" },
 ];
