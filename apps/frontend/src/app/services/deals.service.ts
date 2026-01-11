@@ -47,4 +47,22 @@ export class DealsService {
   receive(dealId: string): Promise<{ ok: true }> {
     return firstValueFrom(this.http.post<{ ok: true }>(`${this.cfg.apiUrl}/deals/${dealId}/receive`, {}));
   }
+
+  async actionRequiredCount(): Promise<{ total: number; buyer: number; seller: number }> {
+    const [myDeals, incomingDeals] = await Promise.all([this.my(), this.incoming()]);
+
+    const buyer = myDeals.filter(d => this.needsBuyerAction(d)).length;
+    const seller = incomingDeals.filter(d => this.needsSellerAction(d)).length;
+
+    return { total: buyer + seller, buyer, seller };
+  }
+
+  private needsBuyerAction(d: DealDto): boolean {
+    return d.status === 'accepted' || d.status === 'shipped';
+  }
+
+  private needsSellerAction(d: DealDto): boolean {
+    return d.status === 'pending' || d.status === 'pickup_selected';
+  }
+
 }

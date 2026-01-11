@@ -116,7 +116,7 @@
                       name="t{{d.id}}"
                     />
                   </label>
-                  <button [disabled]="!tracking[d.id]" class="px-3 py-2 rounded-lg bg-black text-white hover:opacity-90" (click)="ship(d)">
+                  <button [disabled]="!tracking[d.id]" class="px-3 py-2 rounded-lg bg-black text-white hover:opacity-90 disabled:opacity-40" (click)="ship(d)">
                     Подтвердить отправку
                   </button>
                 </div>
