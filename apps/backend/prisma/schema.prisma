@@ -42,6 +42,9 @@ model Book {
   title       String
   author      String?
   description String?
+  isbn        String?        @map("isbn")
+  category    String?        @map("category")
+  condition   BookCondition? @map("condition")
 
   coverUrl String? @map("cover_url")
 
@@ -54,7 +57,16 @@ model Book {
   deals Deal[]
 
   @@index([ownerId])
+  @@index([isbn])
   @@map("books")
+}
+
+enum BookCondition {
+  like_new
+  very_good
+  good
+  acceptable
+  poor
 }
 
 model Deal {

@@ -19,6 +19,9 @@ booksRouter.get("/", async (_req, res) => {
             title: true,
             author: true,
             description: true,
+            isbn: true,
+            category: true,
+            condition: true,
             coverUrl: true,
             status: true,
             createdAt: true,
@@ -41,7 +44,18 @@ booksRouter.get("/my", authGuard, async (req, res) => {
     const books = await prisma.book.findMany({
         where: {ownerId: userId},
         orderBy: {createdAt: "desc"},
-        select: {id: true, title: true, author: true, description: true, coverUrl: true, status: true, createdAt: true},
+        select: {
+            id: true,
+            title: true,
+            author: true,
+            description: true,
+            isbn: true,
+            category: true,
+            condition: true,
+            coverUrl: true,
+            status: true,
+            createdAt: true
+        },
     });
 
     return res.json(books.map(b => ({...b, id: b.id.toString()})));
@@ -61,8 +75,22 @@ booksRouter.post("/", authGuard, async (req, res) => {
             title: parsed.data.title,
             author: parsed.data.author,
             description: parsed.data.description,
+            isbn: parsed.data.isbn,
+            category: parsed.data.category,
+            condition: parsed.data.condition
         },
-        select: {id: true, title: true, author: true, description: true, coverUrl: true, status: true, createdAt: true},
+        select: {
+            id: true,
+            title: true,
+            author: true,
+            description: true,
+            isbn: true,
+            category: true,
+            condition: true,
+            coverUrl: true,
+            status: true,
+            createdAt: true
+        },
     });
 
     return res.status(201).json({...book, id: book.id.toString()});
@@ -100,11 +128,24 @@ booksRouter.patch("/:id", authGuard, async (req, res) => {
             if (parsed.data.title !== undefined) data.title = parsed.data.title;
             if (parsed.data.author !== undefined) data.author = parsed.data.author;
             if (parsed.data.description !== undefined) data.description = parsed.data.description;
+            if (parsed.data.isbn !== undefined) data.isbn = parsed.data.isbn;
+            if (parsed.data.category !== undefined) data.category = parsed.data.category;
+            if (parsed.data.condition !== undefined) data.condition = parsed.data.condition;
 
             const updated = await tx.book.update({
                 where: {id: bookId},
                 data,
-                select: {id: true, title: true, author: true, description: true, status: true, createdAt: true},
+                select: {
+                    id: true,
+                    title: true,
+                    author: true,
+                    description: true,
+                    isbn: true,
+                    category: true,
+                    condition: true,
+                    status: true,
+                    createdAt: true
+                },
             });
 
             return {ok: true as const, updated};
@@ -157,7 +198,17 @@ booksRouter.post("/:id/relist", authGuard, async (req, res) => {
             const updated = await tx.book.update({
                 where: {id: bookId},
                 data: {status: "available"},
-                select: {id: true, title: true, author: true, description: true, status: true, createdAt: true},
+                select: {
+                    id: true,
+                    title: true,
+                    author: true,
+                    description: true,
+                    isbn: true,
+                    category: true,
+                    condition: true,
+                    status: true,
+                    createdAt: true
+                },
             });
 
             return {ok: true as const, book: updated};
@@ -257,7 +308,18 @@ booksRouter.post("/:id/cover", authGuard, upload.single("file"), async (req, res
     const updated = await prisma.book.update({
         where: {id: bookId},
         data: {coverUrl},
-        select: {id: true, title: true, author: true, description: true, status: true, createdAt: true, coverUrl: true},
+        select: {
+            id: true,
+            title: true,
+            author: true,
+            description: true,
+            isbn: true,
+            category: true,
+            condition: true,
+            status: true,
+            createdAt: true,
+            coverUrl: true
+        },
     });
 
     return res.json({...updated, id: updated.id.toString()});
