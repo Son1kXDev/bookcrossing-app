@@ -1,16 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {BookDto} from '../../core/api.types';
 import {AuthService} from '../../auth/auth.service';
 import {DealsService} from '../../services/deals.service';
 import {BooksService} from '../../services/books.service';
+import {WalletService} from '../../services/wallet.service';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [
-    RouterLink
-  ],
+  imports: [],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.scss'
 })
@@ -19,15 +18,21 @@ export class CatalogComponent implements OnInit {
   loading = true;
   error = "";
   busyId: string | null = null;
+  balance = 0;
 
   constructor(
     private booksApi: BooksService,
     private dealsApi: DealsService,
     public auth: AuthService,
-    private router: Router
+    private router: Router,
+    private wallet: WalletService
   ) {}
 
   async ngOnInit() {
+    if (this.auth.hasToken()) {
+      const wallet = await this.wallet.get();
+      this.balance = wallet?.balance ?? 0;
+    }
     await this.reload();
   }
 
@@ -36,6 +41,8 @@ export class CatalogComponent implements OnInit {
     this.error = "";
     try {
       this.books = await this.booksApi.listAll();
+      const wallet = await this.wallet.get();
+      this.balance = wallet?.balance ?? 0;
     } catch {
       this.error = "Не удалось загрузить книги";
     } finally {
@@ -51,7 +58,7 @@ export class CatalogComponent implements OnInit {
 
   async createDeal(b: BookDto) {
     if (!this.auth.hasToken()) {
-      this.router.navigateByUrl("/login");
+      await this.router.navigateByUrl("/login");
       return;
     }
     this.busyId = b.id;
@@ -59,7 +66,7 @@ export class CatalogComponent implements OnInit {
     try {
       await this.dealsApi.create(b.id);
       await this.reload();
-      this.router.navigateByUrl("/deals/my");
+      await this.router.navigateByUrl("/deals/my");
     } catch (e: any) {
       this.error = "Не удалось создать сделку (возможно, книга уже зарезервирована).";
     } finally {

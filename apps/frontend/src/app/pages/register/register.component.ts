@@ -30,9 +30,9 @@ export class RegisterComponent {
     this.error = "";
     this.loading = true;
     try {
-      let userInfo = await this.auth.register(this.email, this.password, this.displayName);
-      this.auth.saveUserInfo(userInfo);
+      await this.auth.register(this.displayName.trim(), this.email.trim(), this.password.trim());
       await this.router.navigateByUrl("/catalog");
+      await this.auth.getOrSaveUserInfo();
     } catch (e: any) {
       this.error = "Не удалось зарегистрироваться.";
     } finally {

@@ -62,12 +62,23 @@ export class AuthService {
     return !!this.tokenStorage.get();
   }
 
-  saveUserInfo(user: UserDto) {
-    localStorage.setItem('userInfo', JSON.stringify(user));
+  async getOrSaveUserInfo() {
+    if (!this.hasToken()) return Promise.reject('No token');
+
+    const user = this.userInfo;
+    if (user) return Promise.resolve(user);
+
+    const user_1 = await this.me();
+    this.setUserInfo(user_1);
+    return user_1;
   }
 
   clearUserInfo(){
     localStorage.removeItem('userInfo');
+  }
+
+  private setUserInfo(user: UserDto) {
+    localStorage.setItem('userInfo', JSON.stringify(user));
   }
 
 }
