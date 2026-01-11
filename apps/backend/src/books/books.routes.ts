@@ -1,7 +1,7 @@
 ﻿import {Router} from "express";
 import {prisma} from "../db/prisma.js";
 import {type AuthedRequest, authGuard} from "../auth/auth-middleware.js";
-import {CreateBookDto, UpdateBookDto} from "./books.dto.js";
+import {CreateBookDto, SetCoverFromUrlDto, UpdateBookDto} from "./books.dto.js";
 import {ensureUploadsDir, extFromMime, getParamId, isAllowedMime, toBigInt, upload} from "../core/utilities.js";
 import path from "path";
 import {promises as fs} from "fs";
@@ -266,6 +266,102 @@ booksRouter.delete("/:id", authGuard, async (req, res) => {
         console.error(e);
         return res.status(500).json({error: "INTERNAL_ERROR"});
     }
+});
+
+function assertAllowedRemoteUrl(raw: string) {
+    const u = new URL(raw);
+
+    const allowedHosts = new Set([
+        "books.google.com",
+        "books.googleusercontent.com",
+        "lh3.googleusercontent.com",
+    ]);
+
+    if (u.protocol !== "https:") {
+        if (u.protocol === "http:") u.protocol = "https:";
+        else throw new Error("BAD_PROTOCOL");
+    }
+
+    if (!allowedHosts.has(u.hostname)) {
+        throw new Error("HOST_NOT_ALLOWED");
+    }
+
+    return u;
+}
+
+booksRouter.post("/:id/cover-from-url", authGuard, async (req, res) => {
+    const userId = (req as AuthedRequest).userId;
+
+    const idStr = String(req.params.id ?? "");
+    if (!/^\d+$/.test(idStr)) return res.status(400).json({error: "INVALID_BOOK_ID"});
+    const bookId = BigInt(idStr);
+
+    const parsed = SetCoverFromUrlDto.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({error: "VALIDATION_ERROR", details: parsed.error.flatten()});
+
+    const book = await prisma.book.findUnique({
+        where: {id: bookId},
+        select: {id: true, ownerId: true, coverUrl: true},
+    });
+    if (!book) return res.status(404).json({error: "BOOK_NOT_FOUND"});
+    if (book.ownerId !== userId) return res.status(403).json({error: "FORBIDDEN"});
+
+    let urlObj: URL;
+    try {
+        urlObj = assertAllowedRemoteUrl(parsed.data.url);
+    } catch {
+        return res.status(400).json({error: "BAD_REMOTE_URL"});
+    }
+
+    const resp = await fetch(urlObj.toString(), {redirect: "follow"});
+    if (!resp.ok) return res.status(502).json({error: "REMOTE_DOWNLOAD_FAILED"});
+
+    const contentType = resp.headers.get("content-type") ?? "";
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    const okType = allowed.some(t => contentType.toLowerCase().includes(t));
+    if (!okType) return res.status(400).json({error: "UNSUPPORTED_FILE_TYPE"});
+
+    const ab = await resp.arrayBuffer();
+    if (ab.byteLength > 2 * 1024 * 1024) return res.status(400).json({error: "FILE_TOO_LARGE"});
+
+    const mime = contentType.split(";")[0].trim();
+    const ext = extFromMime(mime);
+    if (!ext) return res.status(400).json({error: "UNSUPPORTED_FILE_TYPE"});
+
+    await ensureUploadsDir();
+
+    const filename = `book_${bookId.toString()}_${Date.now()}${ext}`;
+    const fullPath = path.join(uploadsDir, filename);
+
+    await fs.writeFile(fullPath, Buffer.from(ab));
+
+    if (book.coverUrl?.startsWith("/uploads/")) {
+        const oldName = book.coverUrl.replace("/uploads/", "");
+        const oldPath = path.join(uploadsDir, oldName);
+        await fs.unlink(oldPath).catch(() => {
+        });
+    }
+
+    const coverUrl = `/uploads/${filename}`;
+
+    const updated = await prisma.book.update({
+        where: {id: bookId},
+        data: {coverUrl},
+        select: {
+            id: true,
+            title: true,
+            author: true,
+            description: true,
+            isbn: true,
+            category: true,
+            condition: true,
+            coverUrl: true,
+            status: true,
+            createdAt: true,
+        },
+    });
+
+    return res.json({...updated, id: updated.id.toString()});
 });
 
 booksRouter.post("/:id/cover", authGuard, upload.single("file"), async (req, res) => {

@@ -21,3 +21,7 @@ export const UpdateBookDto = z.object({
     category: z.string().min(1).optional().nullable(),
     condition: BookCondition.nullable().optional(),
 });
+
+export const SetCoverFromUrlDto = z.object({
+    url: z.url(),
+});
