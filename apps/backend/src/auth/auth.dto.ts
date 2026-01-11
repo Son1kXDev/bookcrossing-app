@@ -1,7 +1,7 @@
 ﻿import {z} from "zod";
 
 export const RegisterDto = z.object({
-    email: z.email(),
+    email: z.email({message: "Email is invalid"}),
     password: z.string().min(6).max(72),
     displayName: z.string().min(2).max(32),
 });
