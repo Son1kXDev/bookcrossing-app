@@ -8,6 +8,7 @@ import {MyBooksComponent} from './pages/my-books/my-books.component';
 import {NewBookComponent} from './pages/new-book/new-book.component';
 import {ShellComponent} from './core/shell/shell.component';
 import {DealsComponent} from './pages/deals/deals.component';
+import {EditBookComponent} from './pages/edit-book/edit-book.component';
 
 export const routes: Routes = [
   {path: "login", component: LoginComponent,},
@@ -20,6 +21,7 @@ export const routes: Routes = [
       { path: "profile", canActivate: [authGuard], component: ProfileComponent },
       { path: "books/my", canActivate: [authGuard], component: MyBooksComponent },
       { path: "books/new", canActivate: [authGuard], component: NewBookComponent },
+      { path: "books/:id/edit", canActivate: [authGuard], component: EditBookComponent },
       { path: "deals", canActivate: [authGuard], component: DealsComponent },
       { path: "**", redirectTo: "catalog" },
     ]

@@ -16,6 +16,7 @@ export class MyBooksComponent implements OnInit {
   books: BookDto[] = [];
   loading = true;
   error = "";
+  busyId: string | null = null;
 
   constructor(private booksApi: BooksService) {}
 
@@ -26,6 +27,19 @@ export class MyBooksComponent implements OnInit {
       this.error = "Не удалось загрузить ваши книги";
     } finally {
       this.loading = false;
+    }
+  }
+
+  async remove(b: BookDto) {
+    this.error = "";
+    this.busyId = b.id;
+    try {
+      await this.booksApi.delete(b.id);
+      this.books = this.books.filter(x => x.id !== b.id);
+    } catch {
+      this.error = "Не удалось удалить книгу. Возможно, по ней есть активная сделка.";
+    } finally {
+      this.busyId = null;
     }
   }
 }
