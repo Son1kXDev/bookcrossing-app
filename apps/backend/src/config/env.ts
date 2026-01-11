@@ -18,7 +18,7 @@ function parseExpiresIn(v: string | undefined): SignOptions["expiresIn"] {
 }
 
 export const env = {
-    PORT: Number(process.env.PORT ?? 3000),
+    PORT: Number(process.env.BACKEND_PORT ?? 3000),
     JWT_SECRET: required("JWT_SECRET"),
     JWT_EXPIRES_IN: parseExpiresIn(process.env.JWT_EXPIRES_IN),
     CORS_ORIGIN: process.env.CORS_ORIGIN ?? "",
