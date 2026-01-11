@@ -10,8 +10,6 @@
         <span class="opacity-70">Баланс:</span>
         <b class="ml-1 text-slate-900">{{ balance }}</b>
       </div>
-    } @else {
-      <a class="btn btn-secondary" routerLink="/login">Войти</a>
     }
 
     <div class="w-full sm:w-[340px]">
@@ -40,18 +38,27 @@
     </div>
   } @else {
 
-    @if(filteredBooks.length === 0 && normalizedQuery){
+    @if(filteredBooks.length === 0){
       <div class="card">
         <div class="card-body">
           <div class="font-medium">Ничего не найдено</div>
-          <div class="muted text-sm mt-1">
-            Попробуйте изменить запрос или очистить поиск.
-          </div>
 
-          @if(searchQuery.trim()){
-            <button class="btn btn-secondary mt-3" (click)="searchQuery=''">
-              Очистить
-            </button>
+          @if(auth.hasToken()) {
+            <div class="text-sm text-slate-600">
+              Хотите пополнить каталог? Добавьте свою книгу в разделе «Мои книги».
+            </div>
+            <div class="flex flex-wrap py-2 gap-2">
+              <a class="btn btn-primary" routerLink="/books/new">Добавить книгу</a>
+              <a class="btn btn-secondary" routerLink="/books/my">Мои книги</a>
+            </div>
+          } @else {
+            <div class="text-sm text-slate-600">
+              Войдите, чтобы добавить свои книги в каталог.
+            </div>
+            <div class="flex flex-wrap py-2 gap-2">
+              <a class="btn btn-primary" routerLink="/login">Войти</a>
+              <a class="btn btn-secondary" routerLink="/register">Регистрация</a>
+            </div>
           }
         </div>
       </div>
@@ -61,32 +68,6 @@
           Найдено: <b class="text-slate-900">{{ filteredBooks.length }}</b>
         </div>
       }
-      @if(books.length === 0){
-        <div class="card">
-          <div class="card-body space-y-3">
-            <div class="font-semibold">Сейчас нет доступных книг</div>
-            <div class="text-sm text-slate-600">
-              Загляните позже или попросите друзей добавить книги.
-            </div>
-
-            @if(!auth.hasToken()){
-              <div class="flex flex-wrap gap-2">
-                <a class="btn btn-primary" routerLink="/register">Создать аккаунт</a>
-                <a class="btn btn-secondary" routerLink="/login">Войти</a>
-              </div>
-            } @else {
-              <div class="text-sm text-slate-600">
-                Хотите пополнить каталог? Добавьте свою книгу в «Мои книги».
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <a class="btn btn-primary" routerLink="/books/new">Добавить книгу</a>
-                <a class="btn btn-secondary" routerLink="/books/my">Мои книги</a>
-              </div>
-            }
-          </div>
-        </div>
-      } @else {
-
         <div class="grid gap-3">
           @for(b of filteredBooks; track b.id) {
             <div class="card">
@@ -183,8 +164,6 @@
             </div>
           }
         </div>
-      }
     }
-
   }
 </div>
