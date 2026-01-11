@@ -40,7 +40,7 @@ export class ShellComponent implements OnInit, OnDestroy {
     );
 
     this.sub.add(
-      interval(5000)
+      interval(10000)
         .pipe(startWith(0))
         .subscribe(() => this.refreshDealsBadge())
     )
