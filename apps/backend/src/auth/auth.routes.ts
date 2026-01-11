@@ -14,7 +14,7 @@ export const authRouter = Router();
 authRouter.post("/register", async (req, res) => {
     const parsed = RegisterDto.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({error: "VALIDATION_ERROR", details: parsed.error.flatten()});
-    
+
     const {email, password, displayName} = parsed.data;
 
     const existing = await prisma.user.findUnique({where: {email}});
@@ -95,6 +95,7 @@ authRouter.get("/me", authGuard, async (req, res) => {
         email: user.email,
         displayName: user.displayName,
         role: user.role,
+        avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
         wallet: user.wallet
             ? {balance: user.wallet.balance, updatedAt: user.wallet.updatedAt}
