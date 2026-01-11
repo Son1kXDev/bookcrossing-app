@@ -3,24 +3,12 @@ import {prisma} from "../db/prisma.js";
 import {type AuthedRequest, authGuard} from "../auth/auth-middleware.js";
 import {CreateDealDto, SelectPickupDto, ShipDealDto} from "./deals.dto.js";
 import type {ShippingService} from "../shipping/shipping.service.js";
+import {getParamId, toBigInt} from "../core/utilities.js";
 
 export const dealsRouter = Router();
 
 export function makeDealsRouter(shipping: ShippingService) {
     const dealsRouter = Router();
-
-    function toBigInt(v: string | number): bigint {
-        if (typeof v === "number") return BigInt(v);
-        if (!/^\d+$/.test(v)) throw new Error("INVALID_ID");
-        return BigInt(v);
-    }
-
-    function getParamId(req: any, key: string): string | null {
-        const raw = req.params?.[key];
-        if (typeof raw === "string") return raw;
-        if (Array.isArray(raw)) return raw[0] ?? null;
-        return null;
-    }
 
     function mapDeal(d: any) {
         return {

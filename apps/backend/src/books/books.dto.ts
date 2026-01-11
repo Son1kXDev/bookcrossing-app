@@ -5,3 +5,9 @@ export const CreateBookDto = z.object({
     author: z.string().max(120).optional(),
     description: z.string().max(2000).optional(),
 });
+
+export const UpdateBookDto = z.object({
+    title: z.string().min(1).max(200).optional(),
+    author: z.string().max(120).optional().nullable(),
+    description: z.string().max(2000).optional().nullable(),
+});
