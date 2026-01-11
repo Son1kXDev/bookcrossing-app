@@ -18,9 +18,11 @@
 
       @if(coverUrl){
         <img
-          [src]="coverSrc(coverUrl)"
+          [ngSrc]="coverSrc(coverUrl)"
+          width="500"
+          height="800"
           alt="Обложка"
-          class="w-full max-h-80 object-cover rounded-2xl border border-gray-950/10"
+          class="w-full h-[800px] w-[500px] object-cover rounded-2xl border border-gray-950/10"
         />
       } @else {
         <div class="rounded-2xl border border-dashed border-gray-950/15 bg-gray-50 p-6 text-sm opacity-70">
@@ -55,6 +57,7 @@
         <input
           [(ngModel)]="title"
           name="title"
+          placeholder="Например: Мастер и Маргарита"
           class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
         />
       </label>
@@ -64,6 +67,7 @@
         <input
           [(ngModel)]="author"
           name="author"
+          placeholder="Например: М. А. Булгаков"
           class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
         />
       </label>
@@ -74,8 +78,31 @@
           [(ngModel)]="description"
           name="description"
           rows="6"
+          placeholder="Коротко опишите состояние и особенности книги…"
           class="w-full rounded-xl border border-gray-950/10 bg-white px-3 py-2 text-sm outline-none focus:border-gray-950/20 focus:ring-2 focus:ring-gray-950/10"
         ></textarea>
+      </label>
+
+      <label class="block">
+        <div class="text-sm font-medium mb-1">Категория</div>
+        <input [(ngModel)]="category" class="input" name="category" placeholder="Например: Фантастика"/>
+      </label>
+
+      <label class="block">
+        <div class="text-sm font-medium mb-1">Состояние</div>
+        <select [(ngModel)]="condition" class="input" name="condition">
+          <option [ngValue]="''">Не указано</option>
+          <option [ngValue]="'like_new'">Как новая</option>
+          <option [ngValue]="'very_good'">Отличное</option>
+          <option [ngValue]="'good'">Хорошее</option>
+          <option [ngValue]="'acceptable'">Удовлетворительное</option>
+          <option [ngValue]="'poor'">Плохое</option>
+        </select>
+      </label>
+
+      <label class="block">
+        <div class="text-sm font-medium mb-1">ISBN</div>
+        <input [(ngModel)]="isbn" class="input" name="isbn" placeholder="Например: 978-5-17-..."/>
       </label>
 
       @if(error){

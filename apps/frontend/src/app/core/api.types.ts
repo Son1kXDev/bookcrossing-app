@@ -11,37 +11,27 @@ export type PickupPointDto = {
 
 export type UserShortDto = {id: string; displayName: string;};
 
+export type BookCondition =
+  | "like_new"
+  | "very_good"
+  | "good"
+  | "acceptable"
+  | "poor"
+  | null;
+
 export type BookDto = {
   id: string;
   title: string;
   author?: string;
   description?: string;
+  isbn?: string | null;
+  category?: string | null;
+  condition?: BookCondition;
   coverUrl?: string | null;
   status: 'available' | 'reserved' | 'exchanged';
   createdAt: string;
   owner?: UserShortDto;
 }
-
-export type ExtendedPublicUserDto = {
-  id: string;
-  displayName: string;
-  role: string;
-  createdAt: string;
-  avatarUrl?: string | null;
-
-  stats: {
-    booksTotal: number;
-    booksAvailable: number;
-    booksReserved: number;
-    booksExchanged: number;
-
-    dealsTotal: number;
-    dealsAsBuyer: number;
-    dealsAsSeller: number;
-    dealsCompleted: number;
-  };
-};
-
 
 export type DealStatus =
   | 'pending'

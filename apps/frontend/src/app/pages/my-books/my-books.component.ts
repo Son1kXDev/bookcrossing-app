@@ -38,10 +38,15 @@ export class MyBooksComponent implements OnInit {
     return `${this.cfg.apiUrl}${coverUrl}`;
   }
 
-  statusLabel(s: BookDto["status"]) {
-    if (s === "available") return "Доступна";
-    if (s === "reserved") return "Зарезервирована";
-    return "Передана";
+  conditionLabel(v: string | null | undefined) {
+    switch (v) {
+      case "new": return "Новая";
+      case "like_new": return "Как новая";
+      case "good": return "Хорошее";
+      case "fair": return "Удовлетворительное";
+      case "poor": return "Плохое";
+      default: return v ?? "";
+    }
   }
 
   async remove(b: BookDto) {

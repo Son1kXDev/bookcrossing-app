@@ -61,14 +61,14 @@
                 <div class="flex gap-3 items-start min-w-0">
                   @if(b.coverUrl){
                     <img
-                      class="h-32 w-24 rounded-xl object-cover border border-slate-200"
+                      class="h-[400px] w-[225px] rounded-xl object-cover border border-slate-200"
                       [ngSrc]="coverSrc(b.coverUrl)"
-                      width="240"
-                      height="320"
+                      width="225"
+                      height="400"
                       alt="cover"
                     />
                   } @else {
-                    <div class="h-32 w-24 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-xs text-slate-500">
+                    <div class="h-[400px] w-[225px] rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-xs text-slate-500">
                       Нет обложки
                     </div>
                   }
@@ -79,6 +79,18 @@
                     @if(b.author){
                       <div class="text-sm text-slate-600 truncate">Автор: {{ b.author }}</div>
                     }
+
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      @if(b.category){
+                        <span class="badge badge-neutral">{{ b.category }}</span>
+                      }
+                      @if(b.condition){
+                        <span class="badge badge-neutral">{{ conditionLabel(b.condition) }}</span>
+                      }
+                      @if(b.isbn){
+                        <span class="badge badge-neutral">ISBN: {{ b.isbn }}</span>
+                      }
+                    </div>
 
                     @if(b.owner){
                       <div class="text-sm text-slate-600">

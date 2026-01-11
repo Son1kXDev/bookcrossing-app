@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
 import {RuntimeConfigService} from "../core/runtime-config.service";
-import type {BookDto} from "../core/api.types";
+import type {BookCondition, BookDto} from "../core/api.types";
 
 @Injectable({ providedIn: "root" })
 export class BooksService {
@@ -16,11 +16,11 @@ export class BooksService {
     return firstValueFrom(this.http.get<BookDto[]>(`${this.cfg.apiUrl}/books/my`));
   }
 
-  create(dto: { title: string; author?: string; description?: string }): Promise<BookDto> {
+  create(dto: { title: string; author?: string; description?: string, isbn?: string, category?: string, condition?: BookCondition}): Promise<BookDto> {
     return firstValueFrom(this.http.post<BookDto>(`${this.cfg.apiUrl}/books`, dto));
   }
 
-  update(bookId: string, dto: { title?: string; author?: string | null; description?: string | null }): Promise<BookDto> {
+  update(bookId: string, dto: { title?: string; author?: string | null; description?: string | null, isbn?: string | null, category?: string | null, condition?: BookCondition }): Promise<BookDto> {
     return firstValueFrom(this.http.patch<BookDto>(`${this.cfg.apiUrl}/books/${bookId}`, dto));
   }
 
@@ -32,6 +32,13 @@ export class BooksService {
     return firstValueFrom(
       this.http.post<BookDto>(`${this.cfg.apiUrl}/books/${bookId}/relist`, {})
     );
+  }
+
+  setCoverFromUrl(bookId: string, url: string): Promise<BookDto> {
+    return firstValueFrom(this.http.post<BookDto>(
+      `${this.cfg.apiUrl}/books/${bookId}/cover-from-url`,
+      { url }
+    ));
   }
 
   uploadCover(bookId: string, file: File): Promise<BookDto> {

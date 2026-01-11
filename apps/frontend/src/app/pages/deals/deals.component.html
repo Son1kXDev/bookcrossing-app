@@ -49,7 +49,7 @@
                     @if(d.seller?.displayName){
                       <div class="text-sm opacity-70">
                         Продавец:
-                        <a class="link" [routerLink]="['/users', d.seller!.id]">
+                        <a class="link" [routerLink]="['/user', d.seller!.id]">
                           {{ d.seller!.displayName }}
                         </a>
                       </div>
@@ -118,7 +118,7 @@
                     @if(d.buyer?.displayName){
                       <div class="text-sm opacity-70">
                         Покупатель:
-                        <a class="link" [routerLink]="['/users', d.buyer!.id]">
+                        <a class="link" [routerLink]="['/user', d.buyer!.id]">
                           {{ d.buyer!.displayName }}
                         </a>
                       </div>

@@ -3,12 +3,15 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {BooksService} from '../../services/books.service';
 import {FormsModule} from '@angular/forms';
 import {RuntimeConfigService} from '../../core/runtime-config.service';
+import {BookCondition} from '../../core/api.types';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-edit-book',
   standalone: true,
   imports: [
-    FormsModule
+    FormsModule,
+    NgOptimizedImage
   ],
   templateUrl: './edit-book.component.html',
   styleUrl: './edit-book.component.scss'
@@ -18,6 +21,9 @@ export class EditBookComponent implements OnInit {
   title = "";
   author = "";
   description = "";
+  isbn = "";
+  category = "";
+  condition: BookCondition = null;
 
   busy = false;
   loading = true;
@@ -78,6 +84,9 @@ export class EditBookComponent implements OnInit {
         this.title = b.title ?? "";
         this.author = b.author ?? "";
         this.description = b.description ?? "";
+        this.isbn = b.isbn ?? "";
+        this.category = b.category ?? "";
+        this.condition = b.condition ?? null;
         this.coverUrl = (b as any).coverUrl ?? null;
       }
     } catch {
@@ -105,6 +114,9 @@ export class EditBookComponent implements OnInit {
         title: this.title.trim(),
         author: this.author.trim() || null,
         description: this.description.trim() || null,
+        isbn: this.isbn.trim() || null,
+        category: this.category.trim() || null,
+        condition: this.condition
       });
       await this.router.navigateByUrl("/books/my");
     } catch (e: any) {

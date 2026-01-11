@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpBackend, HttpClient} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 
 export type RuntimeConfig = {apiUrl: string};
@@ -9,13 +9,20 @@ export type RuntimeConfig = {apiUrl: string};
 })
 export class RuntimeConfigService {
 
-  private _config!: RuntimeConfig;
+  private _config: RuntimeConfig | null = null;
+
+  constructor(private httpBackend: HttpBackend) {}
 
   get apiUrl():string {
-    return this._config.apiUrl;
+    return this._config?.apiUrl ?? "";
   }
 
-  async load(http: HttpClient){
+  get isLoaded(): boolean {
+    return !!this._config?.apiUrl;
+  }
+
+  async load(){
+    const http = new HttpClient(this.httpBackend);
     this._config = await firstValueFrom(http.get<RuntimeConfig>("/config.json"))
   }
 }

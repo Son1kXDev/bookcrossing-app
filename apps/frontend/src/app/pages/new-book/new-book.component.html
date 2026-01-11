@@ -12,11 +12,13 @@
       </div>
     </div>
 
-    @if(coverFile){
+    @if(coverFile || googleCoverUrl){
       <img
-        [src]="coverLocalUrl"
+        [src]="imageSource"
+        width="500"
+        height="800"
         alt="Обложка"
-        class="w-full max-h-80 object-cover rounded-2xl border border-gray-950/10"
+        class="w-full h-[800px] w-[500px] object-cover rounded-2xl border border-gray-950/10"
       />
     } @else {
       <div class="rounded-2xl border border-dashed border-gray-950/15 bg-gray-50 p-6 text-sm opacity-70">
@@ -51,6 +53,69 @@
     </div>
   </section>
 
+  <section class="card">
+    <div class="card-body space-y-3">
+      <div>
+        <div class="section-title">Поиск в каталоге</div>
+        <div class="text-sm text-slate-600">
+          Найдите книгу в Google Books и автозаполните поля
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <input
+          (ngModelChange)="onSearchInput()"
+          [(ngModel)]="searchQuery"
+          class="input flex-1"
+          name="searchQuery"
+          placeholder="Например: Мастер и Маргарита или 978..."
+        />
+        <button (click)="runSearch(searchQuery)" [disabled]="searching" class="btn btn-secondary" type="button">
+          {{ searching ? "..." : "Найти" }}
+        </button>
+      </div>
+
+      @if(searchError){
+        <div class="badge badge-red">{{ searchError }}</div>
+      }
+
+      @if(searching){
+        <div class="muted">Поиск…</div>
+      } @else if(searchResults.length > 0) {
+        <div class="border border-slate-200 rounded-2xl overflow-hidden divide-y">
+          @for(b of searchResults; track b.id){
+            <button type="button" class="w-full text-left p-3 hover:bg-slate-50" (click)="applyGoogleBook(b)">
+              <div class="flex gap-3 items-start">
+                @if(b.thumbnailUrl){
+                  <img
+                    class="h-16 w-12 rounded-xl object-cover border border-slate-200"
+                    [src]="b.thumbnailUrl"
+                    alt="cover"
+                  />
+                } @else {
+                  <div class="h-16 w-12 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-xs text-slate-500">
+                    —
+                  </div>
+                }
+
+                <div class="min-w-0">
+                  <div class="font-medium truncate">{{ b.title }}</div>
+                  <div class="text-sm text-slate-600 truncate">{{ b.author }}</div>
+                  <div class="text-xs text-slate-500 flex flex-wrap gap-2 mt-1">
+                    @if(b.isbn){ <span class="badge badge-neutral">ISBN-13: {{ b.isbn }}</span> }
+                    @if(b.category){ <span class="badge badge-neutral">{{ b.category }}</span> }
+                  </div>
+                </div>
+              </div>
+            </button>
+          }
+        </div>
+      } @else if(searchQuery.trim().length >= 2) {
+        <div class="muted">Ничего не найдено</div>
+      }
+    </div>
+  </section>
+
   <section class="rounded-3xl border border-gray-950/10 bg-white p-5 space-y-4">
     <label class="block">
       <div class="text-sm font-medium mb-1">Название</div>
@@ -81,6 +146,28 @@
         placeholder="Коротко опишите состояние и особенности книги…"
         rows="6"
       ></textarea>
+    </label>
+
+    <label class="block">
+      <div class="text-sm font-medium mb-1">Категория</div>
+      <input [(ngModel)]="category" class="input" name="category" placeholder="Например: Фантастика"/>
+    </label>
+
+    <label class="block">
+      <div class="text-sm font-medium mb-1">Состояние</div>
+      <select [(ngModel)]="condition" class="input" name="condition">
+        <option [ngValue]="''">Не указано</option>
+        <option [ngValue]="'like_new'">Как новая</option>
+        <option [ngValue]="'very_good'">Отличное</option>
+        <option [ngValue]="'good'">Хорошее</option>
+        <option [ngValue]="'acceptable'">Удовлетворительное</option>
+        <option [ngValue]="'poor'">Плохое</option>
+      </select>
+    </label>
+
+    <label class="block">
+      <div class="text-sm font-medium mb-1">ISBN</div>
+      <input [(ngModel)]="isbn" class="input" name="isbn" placeholder="Например: 978-5-17-..."/>
     </label>
 
     @if(error){
