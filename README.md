@@ -186,7 +186,7 @@ Delivery logic is abstracted via a shared shipping layer.
 
 ---
 
-## 🧩 API Overview
+## API Overview
 
 * `/auth/*` — authentication
 * `/users/*` — profiles
@@ -211,3 +211,4 @@ All API responses use JSON.
 ## License
 
 This project is provided for educational and demonstration purposes.
+
